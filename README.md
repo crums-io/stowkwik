@@ -13,7 +13,8 @@ for naming things when you're storing a lot of things of the same type.
 
 ## How to Use
 
-This API calls an object store an `ObjectManager`. Right now there are 2 types of these:
+This [API](https://github.com/gnahraf/stowkwik/tree/master/src/main/java/com/gnahraf/stowkwik) calls an object store an `ObjectManager`. Right now there are 2 types of these:
+
 * `BinaryObjectManager`, and
 * `XmlObjectManager`
 
@@ -21,11 +22,16 @@ Like the names suggest, the first is machine readable, the second is human reada
 BinaryObjectManager uses a type-specific `Codec`; XmlObjectManager still needs a type-specific `Encoder`
 in order unamibigously compute hash state.
 
-The unit tests contain a mock example. See
+The [unit tests](https://github.com/gnahraf/stowkwik/tree/master/src/test/java/com/gnahraf/stowkwik) contain a mock example. See
 
 * Mock - the mock object
 * MockEncoder - encoder used to write mock objects to memory (also used to compute an object's hash)
 * MockCodec - read/write codec used by the BinaryObjectManager
+
+## Limits
+
+A few thousand objects per store. Basically, the max number of files per directory in the file system.
+(Working on fixing this as I write.)
 
 ## Roadmap
 
