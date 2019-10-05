@@ -27,24 +27,10 @@ public class IntPathnameGenerator {
 
 
   /**
-   * 
-   */
-  public IntPathnameGenerator(String filenamePrefix) {
-    this(new File("."), filenamePrefix);
-  }
-
-  /**
-   * 
-   */
-  public IntPathnameGenerator(File dir, String filenamePrefix) {
-    this(dir, filenamePrefix, 5, null);
-  }
-
-  /**
-   * 
+   * Creates an instance that pads to 3 digits, or for less than 1000 invocations.
    */
   public IntPathnameGenerator(File dir, String filenamePrefix,  String filenamePostfix) {
-    this(dir, filenamePrefix, 5, filenamePostfix);
+    this(dir, filenamePrefix, 3, filenamePostfix);
   }
   
 

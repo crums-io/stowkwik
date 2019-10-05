@@ -25,7 +25,7 @@ public class FilepathGeneratorTest extends IoTestCase {
   @Test
   public void test() throws IOException {
     Object methodLabel = new Object() { };
-    File dir = getMethodOutputFilepath(methodLabel, "hfp");
+    File dir = getMethodOutputFilepath(methodLabel);
     FilepathGenerator hfp = new FilepathGenerator(dir, "pre-", ".ext");
     final int count = 9;
     for (int i = 1; i <= count; ++i) {

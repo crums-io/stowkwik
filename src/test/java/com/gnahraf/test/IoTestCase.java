@@ -34,7 +34,9 @@ public class IoTestCase extends SelfAwareTestCase {
   }
   
   
-  
+  /**
+   * Careful, returns the same directory across invocations.
+   */
   public File getMethodOutputDir(Object innerMethodObject) {
     File dir = new File(outputDir, method(innerMethodObject));
     dir.mkdir();
@@ -46,7 +48,8 @@ public class IoTestCase extends SelfAwareTestCase {
   }
   
   /**
-   * Returns a new file path for this run of the test.
+   * Returns a new file path for this run of the test. The object doesn't yet exist:
+   * it can be turned into a directory or regular file.
    */
   public File getMethodOutputFilepath(Object innerMethodObject) {
     return getMethodOutputFilepath(innerMethodObject, "RUN-", null);

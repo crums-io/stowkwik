@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * File name generator anchored to a directory.
  */
-public class FilepathGenerator extends FilenameGenerator {
+public class FilepathGenerator extends FilenameScheme {
   
   private final File dir;
 
@@ -52,10 +52,6 @@ public class FilepathGenerator extends FilenameGenerator {
   
   
   
-  
-  public File toHexFilepath(byte[] identifier) {
-    return new File(dir, toHexFilename(identifier));
-  }
   
   
   public File toFilepath(String identifier) {

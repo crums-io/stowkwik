@@ -9,10 +9,12 @@ import java.io.FilenameFilter;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.gnahraf.util.IntStrings;
+
 /**
  * Represents a prefix / extension file naming scheme.
  */
-public class FilenameGenerator {
+public class FilenameScheme {
   
   private final static int MAX_FILENAME_LENGTH = 255;
   
@@ -24,7 +26,7 @@ public class FilenameGenerator {
   /**
    * 
    */
-  public FilenameGenerator(String prefix, String extension) {
+  public FilenameScheme(String prefix, String extension) {
     this.prefix = prefix == null ? "" : prefix;
     this.extension = extension == null ? "" : extension;
     
@@ -62,7 +64,14 @@ public class FilenameGenerator {
   }
   
   
+  public String toIdentifierUnchecked(String filename) {
+    return filename.substring(prefix.length(), filename.length() - extension.length());
+  }
   
+  
+  public boolean isHexFilename(String filename) {
+    return accept(filename) && IntStrings.isHex(toIdentifierUnchecked(filename));
+  }
   
   
 
@@ -88,7 +97,7 @@ public class FilenameGenerator {
     return new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        return FilenameGenerator.this.accept(name);
+        return FilenameScheme.this.accept(name);
       }
     };
   }
