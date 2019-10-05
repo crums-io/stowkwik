@@ -42,29 +42,35 @@ public class HexPath {
   
   public File find(String hex) {
     hex = canonicalizeHex(hex);
+    String subhex = hex;
     
-    File file = new File(dir, convention.toFilename(hex));
-    if (file.exists())
-      return ensureFile(file);
+    // find the deepest matching subdir.. call it *hdir
     
     // loop invariant: hdir is an existing directory
     File hdir = dir;
-    while (hex.length() > 2) {
+    while (subhex.length() > 2) {
       
-      File subdir = subdirOrNull(hdir, hex);
+      File subdir = subdirOrNull(hdir, subhex);
       if (subdir == null)
         break;
       
       // udpate
       hdir = subdir;
-      hex = hex.substring(2);
-      
-      file = new File(hdir, convention.toFilename(hex));
-      
-      if (file.exists())
-        return ensureFile(file);
+      subhex = subhex.substring(2);
       
     }
+    
+    while (true) {
+      File file = new File(hdir, convention.toFilename(subhex));
+      if (file.exists())
+        return ensureFile(file);
+      if (subhex.equals(hex))
+        break;
+      
+      subhex = hdir.getName() + subhex;
+      hdir = hdir.getParentFile();
+    }
+    
     return null;
   }
   

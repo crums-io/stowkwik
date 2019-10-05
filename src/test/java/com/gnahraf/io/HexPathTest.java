@@ -84,18 +84,20 @@ public class HexPathTest extends IoTestCase {
   
   
   @Test
-  public void test257() throws IOException {
+  public void test258() throws IOException {
     Object label = new Object() { };
     File dir = getMethodOutputFilepath(label);
     
     String anomalous = "0100";
     HexPath hexPath = new HexPath(dir, EXT, 256);
     
-    File file = hexPath.suggest(anomalous);
+    // (Not testing the default behavior, so we set the boolean param explicitly)
+    File file = hexPath.suggest(anomalous, true);
+    assertEquals(dir, file.getParentFile());
     assertTrue(file.createNewFile());
     
     for (int i = 0; i < 255; ++i) {
-      file = hexPath.suggest("00" + HEXSPACE.get(i));
+      file = hexPath.suggest("00" + HEXSPACE.get(i), false);
       assertEquals(dir, file.getParentFile());
       assertTrue(file.createNewFile());
     }
@@ -111,6 +113,13 @@ public class HexPathTest extends IoTestCase {
     assertTrue(file.createNewFile());
     
     assertEquals(file, hexPath.find("00ff"));
+    
+    file = hexPath.suggest("0101", true);
+    assertEquals(dir, file.getParentFile().getParentFile());
+    assertEquals("01", file.getParentFile().getName());
+    assertTrue(file.getParentFile().isDirectory());
+    assertTrue(file.createNewFile());
+    assertEquals(file, hexPath.find("0101"));
   }
 
 }
