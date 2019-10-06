@@ -64,6 +64,13 @@ public class FilenameScheme {
   }
   
   
+  public String toIdentifer(String filename) {
+    if (!accept(filename))
+      throw new IllegalArgumentException(filename);
+    return toIdentifierUnchecked(filename);
+  }
+  
+  
   public String toIdentifierUnchecked(String filename) {
     return filename.substring(prefix.length(), filename.length() - extension.length());
   }

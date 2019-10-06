@@ -7,7 +7,6 @@ package com.gnahraf.io;
 import static com.gnahraf.util.IntStrings.*;
 
 import java.io.File;
-import java.util.Locale;
 
 /**
  * 
@@ -15,14 +14,14 @@ import java.util.Locale;
 public class HexPath {
   
   
-  private final File dir;
+  private final File root;
   private final FilenameScheme convention;
   private final int maxFilesPerDir;
   
   
   
   public HexPath(File dir, String ext, int maxFilesPerDir) {
-    this.dir = dir;
+    this.root = dir;
     this.convention = new FilenameScheme(null, ext);
     this.maxFilesPerDir = maxFilesPerDir;
     
@@ -47,7 +46,7 @@ public class HexPath {
     // find the deepest matching subdir.. call it *hdir
     
     // loop invariant: hdir is an existing directory
-    File hdir = dir;
+    File hdir = root;
     while (subhex.length() > 2) {
       
       File subdir = subdirOrNull(hdir, subhex);
@@ -75,6 +74,15 @@ public class HexPath {
   }
   
   
+  
+  public File findAndOptimize(String hex) {
+    File file = find(hex);
+    if (file == null)
+      return null;
+    return optimizeImpl(file, hex);
+  }
+  
+  
   public File suggest(String hex) {
     return suggest(hex, false);
   }
@@ -85,7 +93,7 @@ public class HexPath {
     // find the deepest existing subdir matching *hex
 
     // loop invariant: hdir is an existing directory
-    File hdir = dir;
+    File hdir = root;
     while (hex.length() > 2) {
       
       File subdir = subdirOrNull(hdir, hex);
@@ -111,7 +119,62 @@ public class HexPath {
   
   
   
+  public File optimize(String hex) {
+    File file = find(hex);
+    if (file == null)
+      throw new IllegalStateException("no found: " + hex);
+    
+    return optimizeImpl(file, hex);
+  }
   
+  
+  public File optimize(File file) {
+    if (!file.isFile())
+      throw new IllegalArgumentException("file does not exist: " + file);
+    String hex = toHex(file);
+    return optimizeImpl(file, hex);
+  }
+  
+  
+  private File optimizeImpl(File file, String hex) {
+    File suggestedPath = suggest(hex, true);
+    if (!suggestedPath.equals(file)) {
+      if (!file.renameTo(suggestedPath))
+        throw new IllegalStateException("rename " + file + " --> " + suggestedPath + " failed");
+      file = suggestedPath;
+    }
+    return file;
+    
+  }
+  
+  
+  
+  public String toHex(File file) {
+    StringBuilder buffer = new StringBuilder();
+    String tail = convention.toIdentifer(file.getName());
+    if (!isHex(tail))
+      throw new IllegalArgumentException(file.toString());
+    
+    File dir = file.getParentFile();
+    toHexRecurse(dir, buffer);
+    return buffer.append(tail).toString();
+  }
+  
+  
+  private void toHexRecurse(File dir, StringBuilder buffer) {
+    String hex = dir.getName();
+    if (!isHex(hex))
+      throw new IllegalArgumentException(dir + "/...");
+    
+    File parent = dir.getParentFile();
+    if (parent == null)
+      throw new IllegalArgumentException("unmanaged (and unlikely) path " + dir + "/..");
+      
+    if (!parent.equals(root))
+      toHexRecurse(dir.getParentFile(), buffer);
+    
+    buffer.append(hex);
+  }
   
   
   
