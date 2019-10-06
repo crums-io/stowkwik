@@ -9,7 +9,14 @@ import static com.gnahraf.util.IntStrings.*;
 import java.io.File;
 
 /**
- * 
+ * A hexadecimal directory scheme used to partition hex-based filenames
+ * in subdirectories. The intended use is for files named after a cryptographic
+ * hash of their state, so the inputs are expected to be randomly distributed.
+ * <p/>
+ * One nice thing about naming files by their hashes is that if that you can safely
+ * rename them without worrying you might lose them. Another is that a bit of edge-case
+ * duplication (as in occasionally having 2 copies of the same file) is okay. (There isn't
+ * any here in this class, but just saying..)
  */
 public class HexPath {
   
@@ -19,7 +26,26 @@ public class HexPath {
   private final int maxFilesPerDir;
   
   
-  
+
+
+  /**
+   * Creates a new instance with minimum threshold for branching (256).
+   * 
+   * @param dir the root directory. Gets created if doesn't already exist
+   * @param ext the file extension, e.g. ".ext"
+   */
+  public HexPath(File dir, String ext) {
+    this(dir, ext, 256);
+  }
+
+  /**
+   * Creates a new instance rooted at the given directory.
+   * 
+   * @param dir the root directory. Gets created if doesn't already exist
+   * @param ext the file extension, e.g. ".ext"
+   * @param maxFilesPerDir when this number of files in a directory is breached, that
+   *                       directory bracnches (must be &ge; 256)
+   */
   public HexPath(File dir, String ext, int maxFilesPerDir) {
     this.root = dir;
     this.convention = new FilenameScheme(null, ext);
@@ -37,6 +63,22 @@ public class HexPath {
       makeDirectory(dir);
     }
   }
+  
+  
+  public File getRoot() {
+    return root;
+  }
+
+  
+  public int getMaxFilesPerDir() {
+    return maxFilesPerDir;
+  }
+  
+  
+  public String getFileExtension() {
+    return convention.getExtension();
+  }
+  
   
   
   public File find(String hex) {
