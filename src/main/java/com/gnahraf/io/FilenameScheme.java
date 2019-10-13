@@ -4,12 +4,12 @@
 package com.gnahraf.io;
 
 
+import static com.gnahraf.util.IntegralStrings.isLowercaseHex;
+
+
 import java.io.File;
 import java.io.FilenameFilter;
 
-import javax.xml.bind.DatatypeConverter;
-
-import com.gnahraf.util.IntStrings;
 
 /**
  * Represents a prefix / extension file naming scheme.
@@ -21,7 +21,6 @@ public class FilenameScheme {
   private final String prefix;
   private final String extension;
   private final int decorationLength;
-  private final int maxByteIdentifierLength;
 
   /**
    * 
@@ -31,9 +30,8 @@ public class FilenameScheme {
     this.extension = extension == null ? "" : extension;
     
     this.decorationLength = this.prefix.length() + this.extension.length();
-    this.maxByteIdentifierLength = (MAX_FILENAME_LENGTH - decorationLength) / 2;
     
-    if (maxByteIdentifierLength < 8)
+    if (MAX_FILENAME_LENGTH - decorationLength < 8)
     	throw new IllegalArgumentException("too long: " + getPrefix() + "/" + getExtension() + "<");
     if (decorationLength == 0)
     	throw new IllegalArgumentException("why bother: no prefix, nor extension");
@@ -54,18 +52,8 @@ public class FilenameScheme {
   
   
   
-  public String toHexFilename(byte[] identifier) {
-    
-    if (identifier == null || identifier.length == 0)
-      throw new IllegalArgumentException("identifier " + identifier);
-    if (identifier.length + maxByteIdentifierLength > 128)
-      throw new IllegalArgumentException("byte array length too long for a file name: " + identifier.length);
-    return prefix + DatatypeConverter.printHexBinary(identifier) + extension;
-  }
-  
-  
   public String toIdentifer(String filename) {
-    if (!accept(filename))
+    if (!acceptForm(filename))
       throw new IllegalArgumentException(filename);
     return toIdentifierUnchecked(filename);
   }
@@ -76,8 +64,12 @@ public class FilenameScheme {
   }
   
   
+  /**
+   * Determines whether the {@linkplain FilenameScheme#toIdentifer(String) identifier}
+   * in the given <tt>filename</tt> is a lowercase hexadecimal string.
+   */
   public boolean isHexFilename(String filename) {
-    return accept(filename) && IntStrings.isHex(toIdentifierUnchecked(filename));
+    return acceptForm(filename) && isLowercaseHex(toIdentifierUnchecked(filename));
   }
   
   
@@ -91,15 +83,26 @@ public class FilenameScheme {
   }
   
   
-  
+  /**
+   * Determines whether the given <tt>filename</tt> conforms to this naming scheme.
+   * 
+   * @see #getFilenameFilter()
+   */
   public boolean accept(String filename) {
-    return
-    	filename.length() > decorationLength &&
-    	  filename.startsWith(prefix) && filename.endsWith(extension);
+    return acceptForm(filename);
   }
   
   
+  protected final boolean acceptForm(String filename) {
+    return
+        filename.length() > decorationLength &&
+          filename.startsWith(prefix) && filename.endsWith(extension);
+  }
   
+  
+  /**
+   * Returns a new stateless filter governed by {@linkplain #accept(String)}.
+   */
   public FilenameFilter getFilenameFilter() {
     return new FilenameFilter() {
       @Override

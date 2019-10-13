@@ -4,7 +4,7 @@
 package com.gnahraf.io;
 
 
-import static com.gnahraf.util.IntStrings.*;
+import static com.gnahraf.util.IntegralStrings.*;
 
 import java.io.File;
 
@@ -21,9 +21,9 @@ import java.io.File;
 public class HexPath {
   
   
-  private final File root;
-  private final FilenameScheme convention;
-  private final int maxFilesPerDir;
+  protected final File root;
+  protected final FilenameScheme convention;
+  protected final int maxFilesPerDir;
   
   
 
@@ -48,7 +48,7 @@ public class HexPath {
    */
   public HexPath(File dir, String ext, int maxFilesPerDir) {
     this.root = dir;
-    this.convention = new FilenameScheme(null, ext);
+    this.convention = new HexNameScheme(ext);
     this.maxFilesPerDir = maxFilesPerDir;
     
     if (maxFilesPerDir < 256) {
@@ -129,6 +129,19 @@ public class HexPath {
     return suggest(hex, false);
   }
   
+  
+  /**
+   * Suggests a path for the given hexadecimal string based on how populated the directory
+   * structure is. The decision whether to suggest a deeper directory than one that already
+   * exists is also governed by the {@linkplain #getMaxFilesPerDir() maxFilesPerDir} property.
+   * <p/>
+   * Note the return value is not influenced by whether a file with the given hex already exists.
+   * 
+   * @param hex  the hexidecimal value the file will be known as
+   * @param makeParentDir if <tt>true</tt>, when a new deeper path is suggested, the parent directory
+   *                      is created on return
+   * @return a file path to given <tt>hex</tt> (which may or may not exist)
+   */
   public File suggest(String hex, boolean makeParentDir) {
     hex = canonicalizeHex(hex);
     
@@ -181,8 +194,13 @@ public class HexPath {
   private File optimizeImpl(File file, String hex) {
     File suggestedPath = suggest(hex, true);
     if (!suggestedPath.equals(file)) {
-      if (!file.renameTo(suggestedPath))
+      if (!file.renameTo(suggestedPath)) {
+        // TODO: there are additional things we can/should try.. here
+        //       1. see if the suggested path already exists (maybe someone else beat us to it)
+        //       2. maybe, for whatever reason there's a lock on the file; in that case we might
+        //          be able to just copy it to the destination
         throw new IllegalStateException("rename " + file + " --> " + suggestedPath + " failed");
+      }
       file = suggestedPath;
     }
     return file;
@@ -240,6 +258,21 @@ public class HexPath {
   private void makeDirectory(File subdir) {
       if (!subdir.mkdirs() && !subdir.isDirectory())
         throw new IllegalArgumentException("failed to create directory " + subdir);
+  }
+  
+  
+  
+  public static class HexNameScheme extends FilenameScheme {
+
+    public HexNameScheme(String extension) {
+      super(null, extension);
+    }
+    
+    @Override
+    public boolean accept(String filename) {
+      return isHexFilename(filename);
+    }
+    
   }
 
 }

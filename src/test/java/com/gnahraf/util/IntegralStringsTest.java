@@ -6,14 +6,14 @@ package com.gnahraf.util;
 
 import static org.junit.Assert.*;
 
-import static com.gnahraf.util.IntStrings.*;
+import static com.gnahraf.util.IntegralStrings.*;
 
 import org.junit.Test;
 
 /**
  * 
  */
-public class IntStringsTest {
+public class IntegralStringsTest {
   
   @Test
   public void testIsHex() {
