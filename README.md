@@ -39,4 +39,6 @@ Started developing this inside another project; making it stand alone. I aim to 
 easy-to-understand way. (I had to add a lot of comments as I revisited this in order to remember what
 I had already done.)
 
-Oct. 6 2019: Pushing to make HexPath a drop-in replacement for FilepathGenerator so that it'll scale to whatever the file system can handle.
+Oct. 6 2019: Pushing to make `HexPath` a drop-in replacement for `FilepathGenerator` so that it'll scale to whatever the file system can handle.
+
+Oct. 12 2019: Working on a `java.util.Splitarator` that supports streaming files mananged under a `HexPath` instance. This is complicated by the fact there are multiple possible directory paths for a given hash value since `HexPath` grows the directory structure as more objects are dropped in.
