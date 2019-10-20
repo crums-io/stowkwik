@@ -126,7 +126,7 @@ public class HexPath {
   
   
   public File suggest(String hex) {
-    return suggest(hex, false);
+    return suggest(hex, true);
   }
   
   
@@ -194,7 +194,14 @@ public class HexPath {
   private File optimizeImpl(File file, String hex) {
     File suggestedPath = suggest(hex, true);
     if (!suggestedPath.equals(file)) {
-      if (!file.renameTo(suggestedPath)) {
+      // if the file already exists
+      if (suggestedPath.isFile()) {
+        if (!verifySame(file, suggestedPath))
+          throw new IllegalStateException("contents differ: " + file + " : " + suggestedPath);
+        if (!file.delete())
+          throw new IllegalStateException("failed to delete redundant file " + file);
+        
+      } else if (!file.renameTo(suggestedPath)) {
         // TODO: there are additional things we can/should try.. here
         //       1. see if the suggested path already exists (maybe someone else beat us to it)
         //       2. maybe, for whatever reason there's a lock on the file; in that case we might
@@ -207,6 +214,10 @@ public class HexPath {
     
   }
   
+  
+  protected boolean verifySame(File a, File b) throws IllegalStateException {
+    return true;
+  }
   
   
   public String toHex(File file) {

@@ -22,9 +22,9 @@ import com.gnahraf.test.IoTestCase;
  */
 public class HexPathTest extends IoTestCase {
   
-  private final static String EXT = ".ext";
+  public final static String EXT = ".ext";
   
-  private final static List<String> HEXSPACE;
+  public final static List<String> HEXSPACE;
   
   static {
     ArrayList<String> hexspace = new ArrayList<>(256);

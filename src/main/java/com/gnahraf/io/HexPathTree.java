@@ -10,14 +10,14 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.gnahraf.util.EasyList;
 
@@ -63,10 +63,54 @@ public class HexPathTree extends HexPath {
   
   
   
+  public void primeRoot() {
+    
+  }
   
+  
+  
+  public Stream<Entry> stream() {
+    return stream(false);
+  }
+  
+  public Stream<Entry> stream(boolean parallel) {
+    return StreamSupport.stream(new Cursor(false), parallel);
+  }
+  
+  
+  public Stream<Entry> streamSansDuplicates() {
+    return StreamSupport.stream(new Cursor(true), false);
+  }
+  
+  
+  public Stream<Entry> streamKnownDistinct(boolean parallel) {
+    Cursor hopeForTheBest = new Cursor(false) {
+      @Override
+      public int characteristics() {
+        return DISTINCT | super.characteristics();
+      }
+    };
+    return StreamSupport.stream(hopeForTheBest, parallel);
+  }
+  
+  
+  /**
+   * A <tt>file</tt> and its <tt>hex</tt> idenifier. Equality, hashCode, and
+   * comparison semantics are solely governed by <tt>hex</tt>. 
+   */
   public static class Entry implements Comparable<Entry> {
     
+    /**
+     * Object's hex identifier.
+     */
     public final String hex;
+    
+    /**
+     * Existing file representing this hex value. Deleting or moving this file
+     * out of the tree will not break the {@linkplain Cursor} that returned it, but
+     * it may break another concurrent cursor that has seen but yet to traverse this
+     * hex value.
+     */
     public final File file;
     
     private Entry(String hex, File file) {
@@ -78,6 +122,7 @@ public class HexPathTree extends HexPath {
     public int compareTo(Entry o) {
       return hex.compareTo(o.hex);
     }
+    
     
     @Override
     public boolean equals(Object o) {
@@ -91,14 +136,26 @@ public class HexPathTree extends HexPath {
   }
   
   
+  public Cursor newCursor() {
+    return new Cursor(false);
+  }
   
-  class Cursor implements Spliterator<Entry> {
-    
+  
+  public Cursor newCursor(boolean distinct) {
+    return new Cursor(distinct);
+  }
+  
+  
+  public class Cursor implements Spliterator<Entry> {
+
+
+    private final boolean distinct;
     private final EasyList<HexDirectoryPosition> pathPositions;
     
     private HexDirectoryPosition[] entryRankedPositions;
     
-    public Cursor() {
+    protected Cursor(boolean distinct) {
+      this.distinct = distinct;
       pathPositions = new EasyList<>();
       pathPositions.add(new HexDirectoryPosition(new HexDirectory()));
       init();
@@ -106,7 +163,8 @@ public class HexPathTree extends HexPath {
     
     
     
-    private Cursor(EasyList<HexDirectoryPosition> pathPositions) {
+    private Cursor(boolean distinct, EasyList<HexDirectoryPosition> pathPositions) {
+      this.distinct = distinct;
       this.pathPositions = pathPositions;
       init();
     }
@@ -141,6 +199,25 @@ public class HexPathTree extends HexPath {
      * @return {@linkplain #hasRemaining()}
      */
     public boolean consumeNext() {
+      
+      if (!distinct)
+        return consumeNextImpl();
+      
+      if (!hasRemaining())
+        return false;
+      
+      String headHex = getHeadValue();
+      
+      do {
+        if (!consumeNextImpl())
+          return false;
+      } while (headHex.equals(getHeadValue()));
+      
+      return true;
+    }
+    
+    
+    private boolean consumeNextImpl() {
       entryRankedPositions[0].consumeNextEntry();
       popConsumed();
       entryRankedPositions = rankPositions();
@@ -152,7 +229,16 @@ public class HexPathTree extends HexPath {
       return entryRankedPositions[0].hasRemaining();
     }
     
-    
+
+
+    /**
+     * Returns <tt>null</tt>, per the <tt>Spliterator</tt> contract for the
+     * {@linkplain Spliterator#SORTED} characterstic.
+     */
+    @Override
+    public Comparator<? super Entry> getComparator() {
+      return null;
+    }
 
 
 
@@ -167,9 +253,11 @@ public class HexPathTree extends HexPath {
     }
 
 
+    // TODO Move toplevel entries on split so advertised ORDERED characteristic is observed
     @Override
     public Spliterator<Entry> trySplit() {
       HexDirectoryPosition splitDirectory = pathPositions.first();
+      
       int splitDepth;
       {
         int depth = 0;
@@ -189,7 +277,7 @@ public class HexPathTree extends HexPath {
         pathPositionsCopy.add(new HexDirectoryPosition(pathPositions.get(depth)));
       
       pathPositionsCopy.add(splitDirectory.split());
-      return new Cursor(pathPositionsCopy);
+      return new Cursor(distinct, pathPositionsCopy);
     }
 
 
@@ -200,16 +288,30 @@ public class HexPathTree extends HexPath {
         HexDirectoryPosition dirPosition = pathPositions.get(depth);
         int entries = dirPosition.entries().size();
         int subdirs = dirPosition.subdirs().size();
-        estimate *= (1 + subdirs);
+        if (subdirs != 0)
+          estimate *= subdirs;
         estimate += entries;
       }
       return estimate;
     }
 
 
+    /**
+     * Returns <tt>ORDERED | SORTED | IMMUTABLE | NONNULL</tt> plus <tt>DISTINCT</tt> if the
+     * distinct <em>view</em> flag is on.
+     * <p/>
+     * Implementation note: I wanna say sorted but not ordered, but the semantics of these flags
+     * are different. The reason why is that making sure {@linkplain #trySplit()} returns a strict
+     * prefix requires a bit more work.
+     */
     @Override
     public int characteristics() {
-      return ORDERED | SORTED | IMMUTABLE | NONNULL;
+      //  is
+      // different
+      int flags = ORDERED | SORTED | IMMUTABLE | NONNULL;
+      if (distinct)
+        flags |= DISTINCT;
+      return flags;
     }
     
     
@@ -318,7 +420,7 @@ public class HexPathTree extends HexPath {
         throw new IllegalStateException("not splittable");
       
       HexDirectoryPosition split = new HexDirectoryPosition(this);
-      int dirSplitIndex = 1 + subdirs.size() / 2;
+      int dirSplitIndex = subdirs.size() / 2;
       
       split.subdirs = subdirs.subList(dirSplitIndex, subdirs.size());
       subdirs = subdirs.subList(0, dirSplitIndex);
@@ -538,10 +640,24 @@ public class HexPathTree extends HexPath {
     }
     
     
+    /**
+     * Equality and hash code semantics are governed by {@linkplain #dir}.
+     * Defined so that the lists returned by {@linkplain #listBranches()} are equal on
+     * subsequent invocations.
+     */
+    @Override
+    public boolean equals(Object o) {
+      return o == this || o instanceof HexDirectory && ((HexDirectory) o).dir.equals(dir);
+    }
     
     
-    
-    
+    /**
+     * Equality and hash code semantics are governed by {@linkplain #dir}.
+     */
+    @Override
+    public int hashCode() {
+      return dir.hashCode();
+    }
     
     
     
