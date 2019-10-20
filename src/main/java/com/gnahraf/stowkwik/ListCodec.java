@@ -15,7 +15,8 @@ import java.util.List;
  *
  */
 public class ListCodec<T> implements Codec<List<T>> {
-  
+
+
   public final static int DEFAULT_MAX_LIST_SIZE = 128;
   
   
@@ -37,11 +38,11 @@ public class ListCodec<T> implements Codec<List<T>> {
     
     if (itemCodec == null)
       throw new IllegalArgumentException("null itemCodec");
+    if (!itemCodec.isSelfDelimiting())
+      throw new IllegalArgumentException("item codec must be self delimiting");
     if (maxListSize < 2)
       throw new IllegalArgumentException("maxListSize " + maxListSize);
   }
-  
-  
   
   
   

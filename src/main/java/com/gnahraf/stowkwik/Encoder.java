@@ -26,4 +26,15 @@ public interface Encoder<T> {
    * Returns the maximum number of bytes written to the destination buffer.
    */
   int maxBytes();
+  
+  
+  /**
+   * Determines whether items are written in a self-delimited way. This condition is
+   * typically satisfied.
+   * 
+   * @return <tt>true</tt>
+   */
+  default boolean isSelfDelimiting() {
+    return true;
+  }
 }
