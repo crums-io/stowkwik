@@ -23,8 +23,8 @@ public class BinaryObjectManager<T> extends HashedObjectManager<T> {
    * @param hashedPath
    * @param encoder
    */
-  public BinaryObjectManager(FilepathGenerator hashedPath, Codec<T> codec) {
-    super(hashedPath, codec);
+  public BinaryObjectManager(File dir, String ext, Codec<T> codec) {
+    super(dir, ext, codec);
     this.codec = codec;
   }
   

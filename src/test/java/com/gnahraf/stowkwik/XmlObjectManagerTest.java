@@ -4,7 +4,7 @@
 package com.gnahraf.stowkwik;
 
 
-import com.gnahraf.io.FilepathGenerator;
+import java.io.File;
 
 /**
  * 
@@ -16,9 +16,9 @@ public class XmlObjectManagerTest extends ObjectManagerTest {
   }
   
   
-  
-  protected XmlObjectManager<Mock> makeStore(FilepathGenerator convention) {
-    return new XmlObjectManager<>(convention, new MockEncoder(), Mock.class);
+  @Override
+  protected XmlObjectManager<Mock> makeStore(File dir) {
+    return new XmlObjectManager<>(dir, ext, new MockEncoder(), Mock.class);
   }
 
 }

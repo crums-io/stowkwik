@@ -4,17 +4,19 @@
 package com.gnahraf.stowkwik;
 
 
+import static com.gnahraf.util.IntegralStrings.toHex;
+
 import java.io.File;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
-import javax.xml.bind.DatatypeConverter;
-
 import com.gnahraf.io.CorruptionException;
-import com.gnahraf.io.FilepathGenerator;
+import com.gnahraf.io.HexPathTree;
 import com.gnahraf.xcept.NotFoundException;
 
 /**
@@ -25,22 +27,34 @@ import com.gnahraf.xcept.NotFoundException;
  */
 public abstract class HashedObjectManager<T> extends ObjectManager<T> {
   
-  private final FilepathGenerator hashedPath;
+  public final static String DEFAULT_HASH_ALGO = "MD5";
+  
+  private final HexPathTree hashedPath;
   private final Encoder<T> encoder;
+  private final String hashAlgo;
+  
+  protected HashedObjectManager(File dir, String ext, Encoder<T> encoder) {
+    this(dir, ext, encoder, DEFAULT_HASH_ALGO);
+  }
 
   /**
-   * 
-   * @param hashedPath  determines the file naming convention
+   * @param dir         the root directory
+   * @param ext         filename extension used by entries
    * @param encoder     binary encoder for computing the hash of the object's contents
    */
-  protected HashedObjectManager(FilepathGenerator hashedPath, Encoder<T> encoder) {
-    this.hashedPath = hashedPath;
+  protected HashedObjectManager(File dir, String ext, Encoder<T> encoder, String hashAlgo) {
+    this.hashedPath = new HexPathTree(dir, ext);
     this.encoder = encoder;
+    this.hashAlgo = hashAlgo;
     
     if (hashedPath == null)
       throw new IllegalArgumentException("null hashedPath");
     if (encoder == null)
       throw new IllegalArgumentException("null encoder");
+    if (hashAlgo == null)
+      throw new IllegalArgumentException("null hashAlgo");
+    // make sure the digest algo is supported
+    newDigest();
   }
   
   
@@ -51,7 +65,7 @@ public abstract class HashedObjectManager<T> extends ObjectManager<T> {
     buffer.flip();
     
     String hash = signature(buffer);
-    File file = hashedPath.toFilepath(hash);
+    File file = hashedPath.suggest(hash, true);
     
     if (file.exists())
       validateFile(file, object, buffer);
@@ -75,14 +89,14 @@ public abstract class HashedObjectManager<T> extends ObjectManager<T> {
 
   @Override
   public boolean containsId(String id) {
-    return hashedPath.toFilepath(id).exists();
+    return hashedPath.find(id) != null;
   }
 
 
   @Override
   public T read(String hash) throws UncheckedIOException {
-    File file = hashedPath.toFilepath(hash);
-    if (!file.exists())
+    File file = hashedPath.find(hash);
+    if (file == null)
       throw new NotFoundException(hash);
     
     return readObjectFile(file);
@@ -91,14 +105,14 @@ public abstract class HashedObjectManager<T> extends ObjectManager<T> {
   
   
   protected final File getFilepath(String hash) {
-    return hashedPath.toFilepath(hash);
+    return hashedPath.find(hash);
   }
   
   
   
   @Override
   public Stream<String> streamIds() {
-    return hashedPath.streamIdentifiers();
+    return hashedPath.stream().map(e -> e.hex);
   }
   
   
@@ -136,20 +150,43 @@ public abstract class HashedObjectManager<T> extends ObjectManager<T> {
    * Excepting its mark, the state of the <tt>buffer</tt> is not modified.
    */
   protected String signature(ByteBuffer buffer) {
-    MessageDigest digest = newDigest();
+    MessageDigest digest = threadLocalDigest();
     buffer.mark();
     digest.update(buffer);
     buffer.reset();
-    return DatatypeConverter.printHexBinary(digest.digest());
+    return toHex(digest.digest());
   }
+  
+  /**
+   * Testing shows about a 10% improvement in speed when reusing digests (SSD
+   */
+  protected MessageDigest threadLocalDigest() {
+    Map<String, MessageDigest> map = digestMap.get();
+    MessageDigest digest = map.get(hashAlgo);
+    if (digest == null) {
+      digest = newDigest();
+      map.put(hashAlgo, digest);
+    } else
+      digest.reset();
+    return digest;
+  }
+  
+  protected final ThreadLocal<Map<String, MessageDigest>> digestMap = new ThreadLocal<>() {
+    @Override
+    protected Map<String, MessageDigest> initialValue() {
+      return new HashMap<>(2);
+    }
+  };
 
   
   
   protected MessageDigest newDigest() {
     try {
-      return MessageDigest.getInstance("MD5");
+      return MessageDigest.getInstance(hashAlgo);
     } catch (NoSuchAlgorithmException nsax) {
-      throw new RuntimeException(nsax);
+      IllegalArgumentException iax = new IllegalArgumentException("hash algo: " + hashAlgo);
+      iax.initCause(nsax);
+      throw iax;
     }
   }
 }

@@ -4,7 +4,7 @@
 package com.gnahraf.stowkwik;
 
 
-import com.gnahraf.io.FilepathGenerator;
+import java.io.File;
 
 /**
  * 
@@ -16,9 +16,9 @@ public class BinaryObjectManagerTest extends ObjectManagerTest {
   }
   
 
-  
-  protected BinaryObjectManager<Mock> makeStore(FilepathGenerator convention) {
-    return new BinaryObjectManager<>(convention, new MockCodec());
+  @Override
+  protected BinaryObjectManager<Mock> makeStore(File dir) {
+    return new BinaryObjectManager<>(dir, ext, new MockCodec());
   }
 
 }

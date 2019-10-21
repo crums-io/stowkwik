@@ -30,8 +30,10 @@ The [unit tests](https://github.com/gnahraf/stowkwik/tree/master/src/test/java/c
 
 ## Limits
 
-A few thousand objects per store. Basically, the max number of files per directory in the file system.
-(Working on fixing this as I write.)
+~~A few thousand objects per store. Basically, the max number of files per directory in the file system. (Working on fixing this as I write.)~~
+Done.
+
+Practically the limits of your storage medium. This uses a pretty scalable, deeper as you grow, directory structure.
 
 ## Roadmap
 
@@ -42,3 +44,8 @@ I had already done.)
 Oct. 6 2019: Pushing to make `HexPath` a drop-in replacement for `FilepathGenerator` so that it'll scale to whatever the file system can handle.
 
 Oct. 12 2019: Working on a `java.util.Splitarator` that supports streaming files mananged under a `HexPath` instance. This is complicated by the fact there are multiple possible directory paths for a given hash value since `HexPath` grows the directory structure as more objects are dropped in.
+
+Oct. 20 2019: Streaming support added in `HexPathTree`, a subclass of `HexPath` and dropped in as a replacement for the flat directory used by the `ObjectManager`s. Tested with 64k files. Next steps:
+
+* `BytesManager`: a straight file-contents based object manager (no marshalling)
+* Command line tool

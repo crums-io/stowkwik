@@ -30,14 +30,17 @@ public class XmlObjectManager<T> extends HashedObjectManager<T> {
   
   private final Class<T> clazz;
 
+  public XmlObjectManager(File dir, String ext, Encoder<T> encoder, Class<T> clazz) {
+    this(dir, ext, encoder, clazz, DEFAULT_HASH_ALGO);
+  }
   
   /**
    * @param encoder  used to compute a hash of the object. Note this is a lot easier than it sounds:
    *                 you just write the state (members) of object <tt>T</tt> to a buffer in whatever order
    *                 (just don't change it). It's not a full codec: you don't have to read it back.
    */
-  public XmlObjectManager(FilepathGenerator hashedPath, Encoder<T> encoder, Class<T> clazz) {
-    super(hashedPath, encoder);
+  public XmlObjectManager(File dir, String ext, Encoder<T> encoder, Class<T> clazz, String hashAlgo) {
+    super(dir, ext, encoder, hashAlgo);
     this.clazz = clazz;
     
     if (clazz == null)

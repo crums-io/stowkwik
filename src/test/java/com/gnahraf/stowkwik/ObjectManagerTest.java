@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.TreeMap;
 
 import org.junit.Test;
 
@@ -99,10 +99,14 @@ public abstract class ObjectManagerTest extends IoTestCase {
   
   
   @Test
-  public void testStreaming256() {
-    ObjectManager<Mock> store = makeStore(new Object() { });
+  public void testStreaming01_256() {
+    Object label = new Object() { };
+
+//    System.out.println("========= " + method(label) + " =========");
     
-    HashMap<String, Mock> book = new HashMap<>();
+    ObjectManager<Mock> store = makeStore(label);
+    
+    TreeMap<String, Mock> book = new TreeMap<>();
     
     for (int i = 0; i < 256; ++i) {
       Mock item = new Mock();
@@ -116,9 +120,80 @@ public abstract class ObjectManagerTest extends IoTestCase {
       assertEquals(book.get(id), obj);
     }
     
-    Set<String> ids = book.keySet();
-    store.streamIds().forEach(id -> ids.remove(id));
+//    System.out.println("book size: " + book.size());
+    
+//    final Set<String> ids = book.keySet();
+    store.streamIds().forEach(
+        id -> {
+//          System.out.println("strm>" + id + "<");
+//          System.out.println("book>" + book.firstKey() + "<");
+            assertNotNull(book.remove(id));
+          });
+    
+//    System.out.println("book size: " + book.size());
     assertTrue(book.isEmpty());
+  }
+  
+  
+  @Test
+  public void testStreaming02_64k() {
+    Object label = new Object() { };
+    String bigtestFlag = "bigtest";
+    String perfFlag = "perftest";
+    boolean bigtest = isFlagged(bigtestFlag);
+    boolean perf = isFlagged(perfFlag);
+    if (!bigtest && !perf) {
+      System.out.println("Skipping " + method(label) + "; to run set -D" + bigtestFlag + "=true or -D" + perfFlag + "=true");
+      System.out.println("If you do so, make sure to *clean right away* since this will create a lot of test files");
+      return;
+    };
+    System.out.println("Running " + method(label) + " (-D" + (perf ? perfFlag : bigtestFlag) + "=true)");
+    System.out.println("***Warning***: Clean build directory often! This creates a lot of files");
+    testStreaming(new Object() { }, 64*1024, perf);
+  }
+  
+  
+  
+  private boolean isFlagged(String flag) {
+    return "true".equalsIgnoreCase(System.getProperty(flag));
+  }
+  
+  
+  private void testStreaming(Object label, int limit, final boolean perf) {
+
+    //  System.out.println("========= " + method(label) + " =========");
+    
+    ObjectManager<Mock> store = makeStore(label);
+    
+    TreeMap<String, Mock> book = new TreeMap<>();
+    
+    long startMillis = System.currentTimeMillis();
+    for (int i = 0; i < limit; ++i) {
+      Mock item = new Mock();
+      item.c = i;
+      String id = store.write(item);
+      if (!perf)
+        book.put(id, item);
+    }
+    
+    for (String id : book.keySet()) {
+      Mock obj = store.read(id);
+      assertEquals(book.get(id), obj);
+    }
+    
+    //  System.out.println("book size: " + book.size());
+    int[] count = { 0 };
+    store.streamIds().forEach(id ->
+          {
+            count[0]++;
+            if (!perf)
+              assertNotNull(book.remove(id));
+          });
+    
+    double lapMillis = System.currentTimeMillis() - startMillis;
+    System.out.println("lap time: " + (lapMillis / 1000) + " sec");
+    assertTrue(book.isEmpty());
+    
   }
   
   
@@ -126,11 +201,10 @@ public abstract class ObjectManagerTest extends IoTestCase {
   
   protected ObjectManager<Mock> makeStore(Object methObj) {
     File dir = getMethodOutputFilepath(methObj);
-    FilepathGenerator convention = new FilepathGenerator(dir, null, ext);
-    return makeStore(convention);
+    return makeStore(dir);
   }
   
   
-  protected abstract ObjectManager<Mock> makeStore(FilepathGenerator convention);
+  protected abstract ObjectManager<Mock> makeStore(File dir);
 
 }
