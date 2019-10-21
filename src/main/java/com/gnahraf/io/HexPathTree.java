@@ -64,7 +64,12 @@ public class HexPathTree extends HexPath {
   
   
   public void primeRoot() {
-    
+    for (String hex : FULL_DIR_SET) {
+      File subdir = new File(getRoot(), hex);
+      subdir.mkdir();
+      if (!subdir.isDirectory())
+        throw new IllegalStateException("failed to create subdir " + subdir);
+    }
   }
   
   

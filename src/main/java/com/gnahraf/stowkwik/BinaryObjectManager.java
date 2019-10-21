@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 
 import com.gnahraf.io.Channels;
 import com.gnahraf.io.CorruptionException;
-import com.gnahraf.io.FilepathGenerator;
 
 /**
  * A binary encoded object manager.
@@ -35,9 +34,7 @@ public class BinaryObjectManager<T> extends HashedObjectManager<T> {
 
   @Override
   protected T readObjectFile(File file) throws UncheckedIOException {
-    ByteBuffer buffer = allocateBuffer(codec.maxBytes());
-    Channels.readFully(file, buffer);
-    buffer.flip();
+    ByteBuffer buffer = loadByteBuffer(file);
     return codec.read(buffer);
   }
 
@@ -51,17 +48,7 @@ public class BinaryObjectManager<T> extends HashedObjectManager<T> {
   
   @Override
   protected void validateFile(File file, T object, ByteBuffer buffer) throws CorruptionException {
-    boolean fail = buffer.remaining() != file.length();
-    if (fail)
-      throw new CorruptionException(file.toString());
-    
-    ByteBuffer contents = allocateBuffer(buffer.remaining());
-    Channels.readFully(file, contents);
-    contents.flip();
-    
-    fail = !contents.equals(buffer);
-    if (fail)
-      throw new CorruptionException(file.toString());
+    validateFileAgainstBuffer(file, buffer);
   }
   
   
