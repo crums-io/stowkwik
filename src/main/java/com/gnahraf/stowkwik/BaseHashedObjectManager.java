@@ -13,11 +13,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Spliterator;
 import java.util.stream.Stream;
 
 import com.gnahraf.io.Channels;
 import com.gnahraf.io.CorruptionException;
 import com.gnahraf.io.HexPathTree;
+import com.gnahraf.util.IntegralStrings;
+import com.gnahraf.util.PrefixOrder;
 import com.gnahraf.xcept.NotFoundException;
 
 /**
@@ -100,7 +103,50 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
     return hexPath.stream().map(e -> e.hex);
   }
   
-
+  
+  public T readUsingPrefix(String idPrefix) throws NotFoundException, IllegalArgumentException, UncheckedIOException {
+    if (idPrefix == null || idPrefix.isEmpty())
+      throw new IllegalArgumentException("empty idPrefix " + idPrefix);
+    
+    idPrefix = IntegralStrings.canonicalizeHex(idPrefix);
+    
+    
+    HexPathTree.Cursor cursor = hexPath.newCursor();
+    
+    if (!cursor.hasRemaining())
+      throw new NotFoundException(idPrefix + "..");
+    
+    PrefixOrder cursorPosition = cursor.prefixOrder(idPrefix);
+    
+    
+    // while we don't have a hit we divide and conquer
+    //
+    HexPathTree.Cursor trailingCursor = null; // for the edge case
+    //
+    for (; cursorPosition.isBefore(); ) {
+      
+      HexPathTree.Cursor split = cursor.trySplit();
+      
+      if (split == null)
+        break;
+      
+      switch (split.prefixOrder(idPrefix)) {
+      case BEFORE:
+        cursor = split;
+        cursorPosition = PrefixOrder.BEFORE;
+      case AFTER:
+        break;
+      case AT:
+        assert trailingCursor == null;
+        trailingCursor = cursor;
+      }
+    }
+    
+    
+    
+    
+    return null;
+  }
   
   protected final File getFilepath(String hash) {
     return hexPath.find(hash);

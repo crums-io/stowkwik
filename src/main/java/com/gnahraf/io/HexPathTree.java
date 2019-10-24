@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.gnahraf.util.EasyList;
+import com.gnahraf.util.PrefixOrder;
 
 /**
  * A more capable <tt>HexPath</tt>. This builds on the base class (which was factored out
@@ -182,8 +183,13 @@ public class HexPathTree extends HexPath {
     }
     
     
-    public String getHeadValue() {
+    public String getHeadHex() {
       return entryRankedPositions[0].firstEntry();
+    }
+    
+    
+    public PrefixOrder prefixOrder(String hexPrefix) {
+      return PrefixOrder.compareToPrefix(getHeadHex(), hexPrefix);
     }
     
     
@@ -195,7 +201,7 @@ public class HexPathTree extends HexPath {
     
     
     public Entry getHeadEntry() {
-      return new Entry(getHeadValue(), getHeadFile());
+      return new Entry(getHeadHex(), getHeadFile());
     }
     
     
@@ -211,12 +217,12 @@ public class HexPathTree extends HexPath {
       if (!hasRemaining())
         return false;
       
-      String headHex = getHeadValue();
+      String headHex = getHeadHex();
       
       do {
         if (!consumeNextImpl())
           return false;
-      } while (headHex.equals(getHeadValue()));
+      } while (headHex.equals(getHeadHex()));
       
       return true;
     }
@@ -258,9 +264,8 @@ public class HexPathTree extends HexPath {
     }
 
 
-    // TODO Move toplevel entries on split so advertised ORDERED characteristic is observed
     @Override
-    public Spliterator<Entry> trySplit() {
+    public Cursor trySplit() {
       HexDirectoryPosition splitDirectory = pathPositions.first();
       
       int splitDepth;
@@ -282,7 +287,8 @@ public class HexPathTree extends HexPath {
         pathPositionsCopy.add(new HexDirectoryPosition(pathPositions.get(depth)));
       
       pathPositionsCopy.add(splitDirectory.split());
-      return new Cursor(distinct, pathPositionsCopy);
+      Cursor split = new Cursor(distinct, pathPositionsCopy);
+      return split.hasRemaining() ? split : null;
     }
 
 
@@ -415,8 +421,6 @@ public class HexPathTree extends HexPath {
     
     private HexDirectoryPosition(HexDirectoryPosition copy) {
       this.hdir = copy.hdir;
-      this.entries = Collections.emptyList();
-      this.subdirs = copy.subdirs;
     }
     
     
@@ -429,6 +433,23 @@ public class HexPathTree extends HexPath {
       
       split.subdirs = subdirs.subList(dirSplitIndex, subdirs.size());
       subdirs = subdirs.subList(0, dirSplitIndex);
+      
+      int entrySplitIndex =
+          -1 - Collections.binarySearch(entries, split.subdirs.get(0).getInheritedValue());
+      
+      assert entrySplitIndex >= 0;
+      
+      if (entrySplitIndex == 0) {
+        split.entries = entries;
+        entries = Collections.emptyList();
+      
+      } else if (entrySplitIndex == entries.size())
+        split.entries = Collections.emptyList();
+      
+      else {
+        split.entries = entries.subList(entrySplitIndex, entries.size());
+        entries = entries.subList(0, entrySplitIndex);
+      }
       
       return split;
     }
