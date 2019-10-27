@@ -19,8 +19,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import javax.swing.event.ListSelectionEvent;
-
 import com.gnahraf.util.EasyList;
 import com.gnahraf.util.Lists;
 import com.gnahraf.util.PrefixOrder;

@@ -13,14 +13,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Spliterator;
 import java.util.stream.Stream;
 
 import com.gnahraf.io.Channels;
 import com.gnahraf.io.CorruptionException;
 import com.gnahraf.io.HexPathTree;
 import com.gnahraf.util.IntegralStrings;
-import com.gnahraf.util.PrefixOrder;
 import com.gnahraf.xcept.NotFoundException;
 
 /**

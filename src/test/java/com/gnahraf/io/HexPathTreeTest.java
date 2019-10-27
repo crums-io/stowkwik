@@ -610,10 +610,9 @@ public class HexPathTreeTest extends IoTestCase {
     while(cursor.tryAdvance(e -> assertEquals(hexes[index[0]++], e.hex)));
     assertEquals(hexes.length, index[0]);
     
-    // now test splitting
     cursor = hexPath.newCursor();
     
-    Spliterator<HexPathTree.Entry> splitCursor = cursor.trySplit();
+//    Spliterator<HexPathTree.Entry> splitCursor = cursor.trySplit();
 //    assertNotNull(splitCursor);
     
     index[0] = 0;
