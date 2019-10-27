@@ -110,43 +110,24 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
     
     idPrefix = IntegralStrings.canonicalizeHex(idPrefix);
     
+    // create a distinct cursor
+    HexPathTree.Cursor cursor = hexPath.newCursor(true);
     
-    HexPathTree.Cursor cursor = hexPath.newCursor();
-    
-    if (!cursor.hasRemaining())
+    if (!cursor.advanceToPrefix(idPrefix))
       throw new NotFoundException(idPrefix + "..");
     
-    PrefixOrder cursorPosition = cursor.prefixOrder(idPrefix);
+    HexPathTree.Entry head = cursor.getHeadEntry();
     
+    if (!head.hex.startsWith(idPrefix))
+      throw new NotFoundException(idPrefix + "..");
     
-    // while we don't have a hit we divide and conquer
-    //
-    HexPathTree.Cursor trailingCursor = null; // for the edge case
-    //
-    for (; cursorPosition.isBefore(); ) {
-      
-      HexPathTree.Cursor split = cursor.trySplit();
-      
-      if (split == null)
-        break;
-      
-      switch (split.prefixOrder(idPrefix)) {
-      case BEFORE:
-        cursor = split;
-        cursorPosition = PrefixOrder.BEFORE;
-      case AFTER:
-        break;
-      case AT:
-        assert trailingCursor == null;
-        trailingCursor = cursor;
-      }
-    }
+    if (cursor.consumeNext() && cursor.getHeadHex().startsWith(idPrefix))
+      throw new IllegalArgumentException("ambiguous (more than 1 result) for prefix " + idPrefix );
     
-    
-    
-    
-    return null;
+    return readObjectFile(head.file);
   }
+  
+  
   
   protected final File getFilepath(String hash) {
     return hexPath.find(hash);

@@ -19,7 +19,10 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.swing.event.ListSelectionEvent;
+
 import com.gnahraf.util.EasyList;
+import com.gnahraf.util.Lists;
 import com.gnahraf.util.PrefixOrder;
 
 /**
@@ -77,6 +80,12 @@ public class HexPathTree extends HexPath {
   
   public Stream<Entry> stream() {
     return stream(false);
+  }
+  
+  public Stream<Entry> streamStartingFrom(String prefix) {
+    Cursor cursor = new Cursor(false);
+    cursor.advanceToPrefix(prefix);
+    return StreamSupport.stream(cursor, false);
   }
   
   public Stream<Entry> stream(boolean parallel) {
@@ -162,10 +171,10 @@ public class HexPathTree extends HexPath {
     
     protected Cursor(boolean distinct) {
       this.distinct = distinct;
-      pathPositions = new EasyList<>();
-      pathPositions.add(new HexDirectoryPosition(new HexDirectory()));
+      pathPositions = new EasyList<>(new HexDirectoryPosition(new HexDirectory()));
       init();
     }
+    
     
     
     
@@ -187,10 +196,6 @@ public class HexPathTree extends HexPath {
       return entryRankedPositions[0].firstEntry();
     }
     
-    
-    public PrefixOrder prefixOrder(String hexPrefix) {
-      return PrefixOrder.compareToPrefix(getHeadHex(), hexPrefix);
-    }
     
     
     public File getHeadFile() {
@@ -234,6 +239,47 @@ public class HexPathTree extends HexPath {
       entryRankedPositions = rankPositions();
       return hasRemaining();
     }
+
+    
+    
+    /**
+     * Consumes all entries up to but not including the specified <tt>prefix</tt>. That is, on return
+     * the cursor is positioned at the first entry whose hex value is greater than or equal to
+     * the argument.
+     * 
+     * @return {@linkplain #hasRemaining()}
+     */
+    public boolean advanceToPrefix(String prefix) {
+      if (!hasRemaining())
+        return false;
+      
+      // compare the head entry with the prefix
+      switch (PrefixOrder.compareToPrefix(getHeadHex(), prefix)) {
+      case BEFORE:
+        // the meat of this method
+        break;
+      case SUB:
+        throw new IllegalArgumentException("prefix longer than namespace: " + prefix);
+      case AT:
+      case AFTER:
+        // nothing to do
+        return true;
+      }
+      
+      for (int j = pathPositions.size(); j-- > 0; ) {
+        HexDirectoryPosition dirPosition = pathPositions.get(j);
+        if (!dirPosition.advanceToPrefix(prefix)) {
+          assert (j == pathPositions.size() - 1);
+          if (j != 0)
+            pathPositions.removeLast();
+        }
+      }
+      
+      init();
+      return hasRemaining();
+    }
+    
+    
     
     
     public boolean hasRemaining() {
@@ -310,10 +356,6 @@ public class HexPathTree extends HexPath {
     /**
      * Returns <tt>ORDERED | SORTED | IMMUTABLE | NONNULL</tt> plus <tt>DISTINCT</tt> if the
      * distinct <em>view</em> flag is on.
-     * <p/>
-     * Implementation note: I wanna say sorted but not ordered, but the semantics of these flags
-     * are different. The reason why is that making sure {@linkplain #trySplit()} returns a strict
-     * prefix requires a bit more work.
      */
     @Override
     public int characteristics() {
@@ -453,6 +495,53 @@ public class HexPathTree extends HexPath {
       
       return split;
     }
+    
+    
+    
+    /**
+     * 
+     * @return {@linkplain #hasRemaining()}
+     */
+    public boolean advanceToPrefix(String prefix) {
+      if (isConsumed())
+        return false;
+      
+      switch (PrefixOrder.compareToPrefix(hdir.getInheritedValue(), prefix)) {
+      
+      case BEFORE:
+        
+        entries = Collections.emptyList();
+        subdirs = Collections.emptyList();
+        return false;
+        
+      case SUB:
+        
+        if (!entries.isEmpty()) {
+          int j = Collections.binarySearch(entries, prefix);
+          if (j < 0)
+            j = -j - 1;
+          if (j == entries.size())
+            entries = Collections.emptyList();
+          else
+            entries = entries.subList(j, entries.size());
+        }
+        
+        if (!subdirs.isEmpty()) {
+          int j = Collections.binarySearch(Lists.transform(subdirs, e -> e.getInheritedValue()), prefix);
+          if (j < 0)
+            j = -j - 1;
+          if (j == subdirs.size())
+            subdirs = Collections.emptyList();
+          else
+            subdirs = subdirs.subList(j, subdirs.size());
+        }
+      
+      default:
+      }
+      return hasRemaining();
+    }
+    
+    
     
     public boolean isSplittable() {
       return subdirs.size() > 1;

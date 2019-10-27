@@ -14,6 +14,10 @@ public enum PrefixOrder {
    */
   BEFORE,
   /**
+   * Subprefix of. The prefix <em>starts</em> with the string compared 
+   */
+  SUB,
+  /**
    * Starts with the prefix
    */
   AT,
@@ -33,7 +37,7 @@ public enum PrefixOrder {
     PrefixOrder order;
 
     if (lexicomp < 0)
-      order = BEFORE;
+      order = prefix.startsWith(string) ? SUB : BEFORE;
     else if (lexicomp == 0 || string.startsWith(prefix))
       order = AT;
     else

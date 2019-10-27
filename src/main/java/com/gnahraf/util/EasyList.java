@@ -22,6 +22,10 @@ public class EasyList<T> extends ArrayList<T> {
   public EasyList(Collection<T> c) {
     super(c);
   }
+
+  public EasyList(T object) {
+    add(object);
+  }
   
   
   public T first() throws IndexOutOfBoundsException {
