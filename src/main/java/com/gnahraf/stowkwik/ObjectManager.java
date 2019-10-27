@@ -6,15 +6,13 @@ package com.gnahraf.stowkwik;
 
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.gnahraf.xcept.NotFoundException;
 
 /**
- * Base abstraction for a simple object store.
+ * Base abstraction for a simple object store. 
  * 
  * @param T the type of data this instance manages. At minimum, this
  *          requires that {@linkplain Object#equals(Object) Object.equals}
@@ -72,21 +70,41 @@ public abstract class ObjectManager<T> {
   public abstract Stream<String> streamIds();
   
   
-  public T readUsingPrefix(String idPrefix) throws NotFoundException, IllegalArgumentException, UncheckedIOException {
-    if (idPrefix == null || idPrefix.isEmpty())
-      throw new IllegalArgumentException("empty idPrefix " + idPrefix);
-    
-    List<String> id =
-        streamIds().filter(hash -> hash.startsWith(idPrefix)).collect(Collectors.toList());
-    
-    if (id.isEmpty())
-      throw new NotFoundException(idPrefix + "..");
-    
-    if (id.size() != 1)
-      throw new IllegalArgumentException("ambiguous prefix " + idPrefix + " (" + id.size() + " matches)");
-    
-    return read(id.get(0));
-  }
+  /**
+   * Returns the object whose ID starts with the given prefix.
+   * <p/>
+   * Note: the base class originally provided an implementation but it was inefficient
+   * (traversed the whole store) and lest I forget again to override it, it's marked abstract.
+   * The expected behavior is as follows..
+   * <tt><pre>
+      public T readUsingPrefix(String idPrefix) throws NotFoundException, IllegalArgumentException, UncheckedIOException {
+        if (idPrefix == null || idPrefix.isEmpty())
+          throw new IllegalArgumentException("empty idPrefix " + idPrefix);
+        
+        List<String> id =
+            streamIds().filter(hash -> hash.startsWith(idPrefix)).collect(Collectors.toList());
+        
+        if (id.isEmpty())
+          throw new NotFoundException(idPrefix + "..");
+        
+        if (id.size() != 1)
+          throw new IllegalArgumentException("ambiguous prefix " + idPrefix + " (" + id.size() + " matches)");
+        
+        return read(id.get(0));
+      }
+   * </pre></tt>
+   * 
+   * @param idPrefix prefix of the object's ID.
+   * 
+   * @return the marshalled object, never <tt>null</tt>
+   * 
+   * @throws NotFoundException
+   *         if no object with ID starting with that prefix could be found
+   * @throws IllegalArgumentException
+   *         if more than one object with ID starting with that prefix is found
+   */
+  public abstract T readUsingPrefix(String idPrefix)
+      throws NotFoundException, IllegalArgumentException, UncheckedIOException;
   
 
   
@@ -151,6 +169,12 @@ public abstract class ObjectManager<T> {
           @Override
           public V read(String id) {
             U u = manager.read(id);
+            return readMapper.apply(u);
+          }
+          
+          @Override
+          public V readUsingPrefix(String idPrefix) {
+            U u = manager.readUsingPrefix(idPrefix);
             return readMapper.apply(u);
           }
           
