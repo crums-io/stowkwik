@@ -108,7 +108,7 @@ public class HexPathTree extends HexPath {
   
   
   /**
-   * A <tt>file</tt> and its <tt>hex</tt> idenifier. Equality, hashCode, and
+   * A <tt>file</tt> and its <tt>hex</tt> identifier. Equality, hash code, and
    * comparison semantics are solely governed by <tt>hex</tt>. 
    */
   public static class Entry implements Comparable<Entry> {
@@ -268,12 +268,37 @@ public class HexPathTree extends HexPath {
         HexDirectoryPosition dirPosition = pathPositions.get(j);
         if (!dirPosition.advanceToPrefix(prefix)) {
           assert (j == pathPositions.size() - 1);
-          if (j != 0)
+          if (j == 0) {
+            entryRankedPositions[0] = dirPosition;  // so hasRemaining() returns false
+                                                    // (array not necessarily sorted anymore)
+            return false;
+          } else
             pathPositions.removeLast();
         }
       }
       
-      init();
+      
+      
+      // Do a variation on init() ..
+
+      // do a pushDown()
+      // .. except here, we advance every subdir to the prefix
+      
+      HexDirectoryPosition deepPosition = pathPositions.last();
+      
+      while (deepPosition.hasSubdirs()) {
+        // loop invariant: deepPosition.advanceToPrefix returned true
+        deepPosition = new HexDirectoryPosition(deepPosition.firstSubdir());
+        deepPosition.advanceToPrefix(prefix);
+        // (we deliberately ignore the return value above;
+        // if it's consumed (false), we still need to add this last subdir pos
+        // so the popConsumed() method can work thru corner cases)
+        pathPositions.add(deepPosition);
+      }
+      
+      popConsumed();
+      entryRankedPositions = rankPositions();
+      
       return hasRemaining();
     }
     
@@ -288,7 +313,8 @@ public class HexPathTree extends HexPath {
 
     /**
      * Returns <tt>null</tt>, per the <tt>Spliterator</tt> contract for the
-     * {@linkplain Spliterator#SORTED} characterstic.
+     * {@linkplain Spliterator#SORTED} characterstic. (<tt>null</tt> just means
+     * that this <tt>Spliterator</tt>'s type implements <tt>Comparable</tt>.)
      */
     @Override
     public Comparator<? super Entry> getComparator() {
@@ -525,6 +551,10 @@ public class HexPathTree extends HexPath {
         }
         
         if (!subdirs.isEmpty()) {
+          // trim the prefix to the depth of the subdirs (so the search below works)
+          prefix = prefix.substring(0, 
+              Math.min(prefix.length(), (hdir.getDepth() + 1)*2) );
+          
           int j = Collections.binarySearch(Lists.transform(subdirs, e -> e.getInheritedValue()), prefix);
           if (j < 0)
             j = -j - 1;

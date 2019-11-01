@@ -16,6 +16,32 @@
     <maven.compiler.target>1.10</maven.compiler.target>
   </properties>
   
+  
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>2.1.0</version>
+        <configuration>
+          <programs>
+            
+            <program>
+              <mainClass>com.gnahraf.stowkwik.main.Storex</mainClass>
+              <id>storex</id>
+            </program>
+            
+            
+          </programs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  
+  
+  
   <dependencies>
 	
 	<dependency>
