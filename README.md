@@ -13,14 +13,25 @@ for naming things when you're storing a lot of things of the same type.
 
 ## How to Use
 
-This [API](https://github.com/gnahraf/stowkwik/tree/master/src/main/java/com/gnahraf/stowkwik) calls an object store an `ObjectManager`. Right now there are 2 types of these:
+This [API](https://github.com/gnahraf/stowkwik/tree/master/src/main/java/com/gnahraf/stowkwik) calls an object store an `ObjectManager`. Right now there are 3 types of these:
 
-* `BinaryObjectManager`, and
+* `BinaryObjectManager`
 * `XmlObjectManager`
+* `BytesManager`
 
-Like the names suggest, the first is machine readable, the second is human readable as well.
-BinaryObjectManager uses a type-specific `Codec`; XmlObjectManager still needs a type-specific `Encoder`
-in order unamibigously compute hash state.
+Like the names suggest, the first is machine readable, the second is human readable. Computing hash state from
+machine readable byte sequences is usually straight forward since in most applications if two objects' byte
+sequences are different then their states are different; when state is human readable however, there are usually
+multiple valid representations of the same state (white space, comments, item order, etc.), so there's a need to cannonicalize
+object state. This is one role of an `Encoder`: it writes an object's state unambiguously to a byte sequence and
+is used to compute the object's hash. A `Codec` is an `Encoder` that can read back what it writes.
+
+`BinaryObjectManager` uses a type-specific `Codec`; `XmlObjectManager` still needs a type-specific `Encoder`
+in order to unamibigously compute hash state (we don't want an object's hash to change if we switch XML libraries, for instance.
+Dev note: should be able to automate). If on the other hand, you want to marshal objects elsewhere and just want
+to throw blobs of bytes into a store, you can use a `BytesManager` which doesn't require any codec. (A file based
+version--important in the case of big blobs--is straightforward and in the works).
+
 
 The [unit tests](https://github.com/gnahraf/stowkwik/tree/master/src/test/java/com/gnahraf/stowkwik) contain a mock example. See
 
@@ -29,9 +40,6 @@ The [unit tests](https://github.com/gnahraf/stowkwik/tree/master/src/test/java/c
 * MockCodec - read/write codec used by the BinaryObjectManager
 
 ## Limits
-
-~~A few thousand objects per store. Basically, the max number of files per directory in the file system. (Working on fixing this as I write.)~~
-Done.
 
 Practically the limits of your storage medium. This uses a pretty scalable, deeper as you grow, directory structure.
 
@@ -49,3 +57,5 @@ Oct. 20 2019: Streaming support added in `HexPathTree`, a subclass of `HexPath` 
 
 * `BytesManager`: a straight file-contents based object manager (no marshalling)
 * Command line tool
+
+Nov. 3 2019: Created `storex` a command line tool for exploring an existing store.
