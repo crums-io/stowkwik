@@ -41,5 +41,23 @@ public class Lists {
     }
     
   }
+  
+  
+  public static <T> List<T> asReadOnlyList(T[] array) {
+    Objects.requireNonNull(array);
+    
+    return new AbstractList<T>() {
+
+      @Override
+      public T get(int index) {
+        return array[index];
+      }
+
+      @Override
+      public int size() {
+        return array.length;
+      }
+    };
+  }
 
 }

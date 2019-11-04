@@ -138,19 +138,21 @@ public abstract class ObjectManagerTest extends IoTestCase {
   @Test
   public void testStreaming02_64k() {
     Object label = new Object() { };
-    String bigtestFlag = "bigtest";
-    String perfFlag = "perftest";
-    boolean bigtest = isFlagged(bigtestFlag);
-    boolean perf = isFlagged(perfFlag);
+    boolean bigtest = isFlagged(BIG_FLAG);
+    boolean perf = isFlagged(PERF_FLAG);
     if (!bigtest && !perf) {
-      System.out.println("Skipping " + method(label) + "; to run set -D" + bigtestFlag + "=true or -D" + perfFlag + "=true");
+      System.out.println("Skipping " + method(label) + "; to run set -D" + BIG_FLAG + "=true or -D" + PERF_FLAG + "=true");
       System.out.println("If you do so, make sure to *clean right away* since this will create a lot of test files");
       return;
     };
-    System.out.println("Running " + method(label) + " (-D" + (perf ? perfFlag : bigtestFlag) + "=true)");
+    System.out.println("Running " + method(label) + " (-D" + (perf ? PERF_FLAG : BIG_FLAG) + "=true)");
     System.out.println("***Warning***: Clean build directory often! This creates a lot of files");
     testStreaming(new Object() { }, 64*1024, perf);
   }
+  
+  
+  public final static String BIG_FLAG = "bigtest";
+  public final static String PERF_FLAG = "perftest";
   
   
   
@@ -167,7 +169,13 @@ public abstract class ObjectManagerTest extends IoTestCase {
     
     TreeMap<String, Mock> book = new TreeMap<>();
     
+    if (perf)
+      System.out.println("Validation setup and checks excluded while -D" + PERF_FLAG + "=true");
+    else
+      System.out.println("Performing 2 read passes with -D" + BIG_FLAG + "=true");
+    
     long startMillis = System.currentTimeMillis();
+    
     for (int i = 0; i < limit; ++i) {
       Mock item = new Mock();
       item.c = i;
@@ -175,6 +183,10 @@ public abstract class ObjectManagerTest extends IoTestCase {
       if (!perf)
         book.put(id, item);
     }
+    
+    long writeLap = System.currentTimeMillis();
+    double wSec = (writeLap - startMillis) / 1000.0;
+    System.out.println("write lap time: " + wSec + " sec");
     
     for (String id : book.keySet()) {
       Mock obj = store.read(id);
@@ -185,13 +197,16 @@ public abstract class ObjectManagerTest extends IoTestCase {
     int[] count = { 0 };
     store.streamIds().forEach(id ->
           {
-            count[0]++;
+            if (count[0]++ % 1000 == 0)
+              System.out.println(id);
             if (!perf)
               assertNotNull(book.remove(id));
           });
     
-    double lapMillis = System.currentTimeMillis() - startMillis;
-    System.out.println("lap time: " + (lapMillis / 1000) + " sec");
+    long readLap = System.currentTimeMillis();
+    double rSec = (readLap - writeLap) / 1000.0;
+    System.out.println("read  lap time: " + rSec + " sec");
+    assertEquals(limit, count[0]);
     assertTrue(book.isEmpty());
     
   }

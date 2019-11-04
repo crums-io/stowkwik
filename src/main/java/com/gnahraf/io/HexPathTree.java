@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.gnahraf.util.EasyList;
+import com.gnahraf.util.IntegralStrings;
 import com.gnahraf.util.Lists;
 import com.gnahraf.util.PrefixOrder;
 
@@ -31,11 +32,9 @@ public class HexPathTree extends HexPath {
 
   
   private final static String[] FULL_DIR_SET = new String[256];
+  
   static {
-    for (int i = 0; i < 16; ++i)
-      FULL_DIR_SET[i] = "0" + Integer.toHexString(i);
-    for (int i = 16; i < 256; ++i)
-      FULL_DIR_SET[i] = Integer.toHexString(i);
+    IntegralStrings.BYTE_HEX_VALUES.toArray(FULL_DIR_SET);
   }
   
   /**

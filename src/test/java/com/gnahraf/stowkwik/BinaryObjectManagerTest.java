@@ -9,7 +9,7 @@ import java.io.File;
 /**
  * 
  */
-public class BinaryObjectManagerTest extends ObjectManagerTest {
+public class BinaryObjectManagerTest extends NoBiggiesObjectManagerTest {
   
   public BinaryObjectManagerTest() {
     super(".bino");

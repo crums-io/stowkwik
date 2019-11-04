@@ -41,14 +41,6 @@ public class PrintSupport {
   }
   
   
-  public void incrIndentation(int delta) {
-    int ni = getIndentation() - delta;
-    if (ni < 0)
-      throw new IllegalStateException("delta " + delta + "; indentation " + getIndentation());
-    setIndentation(ni);
-  }
-  
-  
   /**
    * Returns the number of characters written to the line, ignoring
    * indentation.

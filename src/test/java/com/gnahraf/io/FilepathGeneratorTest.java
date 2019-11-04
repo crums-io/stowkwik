@@ -36,7 +36,7 @@ public class FilepathGeneratorTest extends IoTestCase {
     Stream<String> hashStream = hfp.streamIdentifiers();
     this.counter = 0;
     hashStream.forEach(s -> {
-      System.out.println(s);
+//      System.out.println(s);
       int hash = Integer.valueOf(s);
       assertTrue(0 < hash && hash < 10);
       ++counter;

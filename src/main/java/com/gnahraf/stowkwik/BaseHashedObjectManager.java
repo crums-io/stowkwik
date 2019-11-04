@@ -138,12 +138,11 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
           "file length " + file.length() + " > maxBytes (" + maxBytes() + "): " + file);
     ByteBuffer buffer = allocateBuffer((int) file.length());
     Channels.readFully(file, buffer);
-    buffer.flip();
-    return buffer;
+    return buffer.flip();
   }
   
   
-  protected final void validateFileAgainstBuffer(File file, ByteBuffer buffer) {
+  protected final void validateFileAgainstBuffer(File file, ByteBuffer buffer) throws CorruptionException {
     boolean fail = buffer.remaining() != file.length();
     if (fail)
       throw new CorruptionException(file.toString());

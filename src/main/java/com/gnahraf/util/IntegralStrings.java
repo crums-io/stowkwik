@@ -3,9 +3,9 @@
  */
 package com.gnahraf.util;
 
-import java.util.Locale;
 
-import javax.xml.bind.DatatypeConverter;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 
@@ -13,6 +13,28 @@ import javax.xml.bind.DatatypeConverter;
 public class IntegralStrings {
   
   private IntegralStrings() {  }
+  
+  
+
+  
+  private final static String[] BYTE_HEX_VALS;
+  
+  /**
+   * Ordered list of 2 character wide, lowercase hex strings representing
+   * the byte values from 0 to 255. Immutable.
+   */
+  public final static List<String> BYTE_HEX_VALUES;
+  
+  static {
+    BYTE_HEX_VALS = new String[256];
+    for (int i = 0; i < 16; ++i)
+      BYTE_HEX_VALS[i] = "0" + Integer.toHexString(i);
+    for (int i = 16; i < 256; ++i)
+      BYTE_HEX_VALS[i] = Integer.toHexString(i);
+    
+    BYTE_HEX_VALUES = Lists.asReadOnlyList(BYTE_HEX_VALS);
+  }
+  
   
   
   public static boolean isHex(String number) {
@@ -71,11 +93,19 @@ public class IntegralStrings {
   }
   
   
+  public static String toHex(byte b) {
+    return BYTE_HEX_VALS[((int) b) & 0xff];
+  }
+  
   
   public static String toHex(byte[] bytes) {
-    if (bytes == null || bytes.length == 0)
-      throw new IllegalArgumentException("identifier " + bytes);
-    return DatatypeConverter.printHexBinary(bytes).toLowerCase(Locale.ROOT);
+    int len = bytes.length;
+    if (len == 0)
+      throw new IllegalArgumentException("empty array: " + bytes);
+    StringBuilder string = new StringBuilder(2 * len);
+    for (int i = 0; i < len; ++i)
+      string.append(toHex(bytes[i]));
+    return string.toString();
   }
 
 }
