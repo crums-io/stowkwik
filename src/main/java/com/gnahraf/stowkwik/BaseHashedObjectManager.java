@@ -23,12 +23,15 @@ import com.gnahraf.xcept.NotFoundException;
 
 /**
  * Base implementation for a file-per-object storage manager. The ID of each object is
- * determined by a cryptographic hash (MD5 suffices) of its contents.
+ * determined by a cryptographic hash (MD5 usually suffices) of its contents.
  *
  * @param T the type of object managed.
  */
 public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
   
+  /**
+   * Default hashing algorithm used by subclasses.
+   */
   public final static String DEFAULT_HASH_ALGO = "MD5";
   
   protected final HexPathTree hexPath;
@@ -36,6 +39,15 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
 
   /**
    * 
+   * @param dir the root directory. If doesn't exist it's created.
+   * @param ext the file name extension (multiple stores with different
+   *            extensions on the same are possible on the same root
+   *            directory
+   * @param hashAlgo
+   *            the name of the cryptographic hashing algorithm
+   *            (suitable for {@linkplain MessageDigest#getInstance(String)})
+   * 
+   * @see BaseHashedObjectManager#DEFAULT_HASH_ALGO
    */
   protected BaseHashedObjectManager(File dir, String ext, String hashAlgo) {
     this.hexPath = new HexPathTree(dir, ext);

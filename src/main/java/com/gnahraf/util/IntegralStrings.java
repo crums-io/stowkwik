@@ -4,6 +4,7 @@
 package com.gnahraf.util;
 
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Locale;
 
@@ -105,6 +106,19 @@ public class IntegralStrings {
     StringBuilder string = new StringBuilder(2 * len);
     for (int i = 0; i < len; ++i)
       string.append(toHex(bytes[i]));
+    return string.toString();
+  }
+  
+  
+  public static String toHex(ByteBuffer buffer) {
+    int len = buffer.remaining();
+    if (len == 0)
+      throw new IllegalArgumentException("empty buffer: " + buffer);
+    buffer.mark();
+    StringBuilder string = new StringBuilder(2 * len);
+    for (int i = len; i-- > 0; )
+      string.append(toHex(buffer.get()));
+    buffer.reset();
     return string.toString();
   }
 
