@@ -3,6 +3,7 @@
  */
 package com.gnahraf.util.main;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.gnahraf.xcept.NotFoundException;
@@ -19,7 +20,7 @@ public class Args {
   
   
 
-  public static String getValue(String[] args, String name) {
+  public static String getValue(String[] args, String name) throws NotFoundException {
     String value = getValue(args, name, null);
     if (value == null)
       throw new NotFoundException(name + EQ + ".. in args " + Arrays.asList(args));
@@ -34,6 +35,22 @@ public class Args {
         return args[i].substring(searchString.length());
     }
     return defaultValue;
+  }
+  
+  public static String[] getValues(String[] args, String name) {
+    String searchString = name.toString() + EQ;
+    ArrayList<String> values = new ArrayList<>(args.length);
+    for (String arg : args) {
+      if (arg.startsWith(searchString))
+        values.add(arg.substring(searchString.length()));
+    }
+    
+    return values.toArray(new String[values.size()]);
+  }
+  
+  
+  public static boolean getTrue(String[] args, String name) {
+    return "true".equalsIgnoreCase(getValue(args, name, null));
   }
 
 

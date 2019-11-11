@@ -26,20 +26,37 @@ public class FileManager extends BaseHashedObjectManager<File> {
   private final boolean moveOnWrite;
 
   /**
+   * Creates a <em>move-on-write</em>, MD5 instance; {@code this(dir, ext, DEFAULT_HASH_ALGO, true)}
    * 
-   * @param dir
-   * @param ext
-   * @param moveOnWrite
+   * @see FileManager#FileManager(File, String, String, boolean)
+   */
+  public FileManager(File dir, String ext) {
+    this(dir, ext, DEFAULT_HASH_ALGO, true);
+  }
+
+  /**
+   * Creates an MD5 instance; {@code this(dir, ext, DEFAULT_HASH_ALGO, moveOnWrite)}
+   * 
+   * @see FileManager#FileManager(File, String, String, boolean)
    */
   public FileManager(File dir, String ext, boolean moveOnWrite) {
     this(dir, ext, DEFAULT_HASH_ALGO, moveOnWrite);
   }
 
   /**
-   * @param dir
-   * @param ext
-   * @param hashAlgo
-   * @param moveOnWrite
+   * Full param contructor.
+   * 
+   * @param dir         the root directory. If doesn't exist it's created.
+   * @param ext         the file name extension (multiple stores with different
+   *                    extensions on the same are possible on the same root
+   *                    directory
+   * @param hashAlgo    the name of the cryptographic hashing algorithm
+   *                    (suitable for {@linkplain MessageDigest#getInstance(String)}).
+   *                    E.g. <tt>MD5</tt>, <tt>SHA-1</tt>, <tt>SHA-256</tt>, ..
+   * @param moveOnWrite if <tt>true</tt> then input files are <em>moved</em> on writes;
+   *                    o.w. input files are <em>copied</em> on writes.
+   * 
+   * @see BaseHashedObjectManager#DEFAULT_HASH_ALGO
    */
   public FileManager(File dir, String ext, String hashAlgo, boolean moveOnWrite) {
     super(dir, ext, hashAlgo);
@@ -83,6 +100,7 @@ public class FileManager extends BaseHashedObjectManager<File> {
     return toHex(buffer);
   }
 
+  @SuppressWarnings("resource")
   @Override
   protected ByteBuffer toByteBuffer(File object) throws UncheckedIOException {
     
@@ -96,7 +114,7 @@ public class FileManager extends BaseHashedObjectManager<File> {
       if (bytes > 128  * 1024)
         buffer = ByteBuffer.allocateDirect(8 * 1024);
       else
-        buffer = ByteBuffer.allocate(Math.min((int) bytes, 4096));
+        buffer = ByteBuffer.allocate(Math.min((int) bytes, 4 * 1024));
     }
 
     MessageDigest digest = threadLocalDigest();

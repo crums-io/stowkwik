@@ -36,6 +36,7 @@ public class FileManagerTest extends NoBiggiesObjectManagerTest {
   }
 
   
+  @SuppressWarnings("resource")
   @Override
   protected ObjectManager<Mock> makeStore(File dir) {
     
@@ -54,14 +55,14 @@ public class FileManagerTest extends NoBiggiesObjectManagerTest {
           ByteBuffer buffer = ByteBuffer.allocate((int) file.length());
           Channels.readFully(file, buffer);
           buffer.flip();
-          buffer.limit(buffer.limit() - 1);
+          buffer.limit(buffer.limit() - 1); // remove padding
           return codec.read(buffer);
         },
         
         mock -> {
           ByteBuffer buffer = ByteBuffer.allocate(codec.maxBytes() + 1);
           codec.write(mock, buffer);
-          buffer.put((byte) 77);
+          buffer.put((byte) 77);  // (pad to indicate we're not cheating)
           buffer.flip();
           File file = new File(staging, "S" + count.incrementAndGet());
           try (FileChannel channel = new FileOutputStream(file).getChannel()) {

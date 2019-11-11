@@ -32,6 +32,11 @@
               <id>storex</id>
             </program>
             
+            <program>
+              <mainClass>com.gnahraf.stowkwik.main.StowD</mainClass>
+              <id>stowd</id>
+            </program>
+            
             
           </programs>
         </configuration>

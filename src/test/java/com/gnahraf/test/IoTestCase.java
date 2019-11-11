@@ -36,6 +36,11 @@ public class IoTestCase extends SelfAwareTestCase {
   
   /**
    * Careful, returns the same directory across invocations.
+   * 
+   * @param innerMethodObject
+   *        an instance of an anonymous type declared in the body of the test method
+   * 
+   * @see #method(Object)
    */
   public File getMethodOutputDir(Object innerMethodObject) {
     File dir = new File(outputDir, method(innerMethodObject));
@@ -50,6 +55,11 @@ public class IoTestCase extends SelfAwareTestCase {
   /**
    * Returns a new file path for this run of the test. The object doesn't yet exist:
    * it can be turned into a directory or regular file.
+   * 
+   * @param innerMethodObject
+   *        an instance of an anonymous type declared in the body of the test method
+   * 
+   * @see #method(Object)
    */
   public File getMethodOutputFilepath(Object innerMethodObject) {
     return getMethodOutputFilepath(innerMethodObject, "RUN-", null);
@@ -61,7 +71,8 @@ public class IoTestCase extends SelfAwareTestCase {
   
   public File getMethodOutputFilepath(Object innerMethodObject, String prefix, String postfix) {
     File dir = getMethodOutputDir(innerMethodObject);
-    return new IntPathnameGenerator(dir, prefix, postfix).newPath();
+    // max 99 invocations w/o cleaning (deliberate!)
+    return new IntPathnameGenerator(dir, prefix, 2, postfix).newPath();
   }
 
 }

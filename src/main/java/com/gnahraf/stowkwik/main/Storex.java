@@ -151,7 +151,7 @@ public class Storex {
 
 
   private static String getRequiredParam(String[] args, String param) {
-    String value = getValue(args, param);
+    String value = getValue(args, param, null);
     if (value == null || value.isEmpty())
       exitInputError("Missing required " + param + "={value} parameter");
     return value;
@@ -195,9 +195,9 @@ public class Storex {
     table.setIndentation(1);
     table.printRow(EXT + "=*", "the file extension (include the period)", REQ);
     table.printRow(DIR + "=*", "store root directory (must already exist)", REQ);
-    table.printRow(HEX + "=*", "outputs a single entry using this unambiguous prefix", REQ_PLUS);
+    table.printRow(HEX + "=*", "outputs a single entry using this unambiguous prefix", REQ_STAR);
     table.printRow(null,       "of its hexadecimal ID", null);
-    table.printRow(START + "=*", "lists entries in ascending order of hex IDs starting from", REQ_PLUS);
+    table.printRow(START + "=*", "lists entries in ascending order of hex IDs starting from", REQ_STAR);
     table.printRow(null,         "given hex (prefix OK)", null);
     table.printRow(PRINT + "=*", "sets what's to be output. Valid values range in [1," + MAX_OPTS + "]", OPT);
     table.printRow(null,         "(default " + DEFAULT_OPTS + ") and are bit field combinations of the following", null);
@@ -221,7 +221,7 @@ public class Storex {
     out.println();
     legend.printRow("*", "denotes an arbitrary input value (not a wildcard)");
     legend.printRow(REQ, "denotes a required name={value} arg");
-    legend.printRow(REQ_PLUS, "denotes a required one-of-many name={value} arg");
+    legend.printRow(REQ_STAR, "denotes a required one-of-many name={value} arg");
     legend.printRow(null, "(grouped together in adjacent rows)");
     out.println();
   }
@@ -235,7 +235,7 @@ public class Storex {
   private final static String PRINT = "print";
   
   private final static String REQ = "R";
-  private final static String REQ_PLUS = "R+";
+  private final static String REQ_STAR = "R*";
   private final static String OPT = "";
   
   

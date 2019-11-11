@@ -13,11 +13,12 @@ for naming things when you're storing a lot of things of the same type.
 
 ## How to Use
 
-This [API](https://github.com/gnahraf/stowkwik/tree/master/src/main/java/com/gnahraf/stowkwik) calls an object store an `ObjectManager`. Right now there are 3 types of these:
+This [API](https://github.com/gnahraf/stowkwik/tree/master/src/main/java/com/gnahraf/stowkwik) calls an object store an `ObjectManager`. Right now there are 4 types of these:
 
 * `BinaryObjectManager`
 * `XmlObjectManager`
 * `BytesManager`
+* `FileManager`
 
 Like the names suggest, the first is machine readable, the second is human readable. Computing hash state from
 machine readable byte sequences is usually straight forward since in most applications if two objects' byte
@@ -29,8 +30,8 @@ is used to compute the object's hash. A `Codec` is an `Encoder` that can read ba
 `BinaryObjectManager` uses a type-specific `Codec`; `XmlObjectManager` still needs a type-specific `Encoder`
 in order to unamibigously compute hash state (we don't want an object's hash to change if we switch XML libraries, for instance.
 Dev note: should be able to automate). If on the other hand, you want to marshal objects elsewhere and just want
-to throw blobs of bytes into a store, you can use a `BytesManager` which doesn't require any codec. (A file based
-version--important in the case of big blobs--is straightforward and in the works).
+to throw blobs of bytes into a store, you can use a `BytesManager` which doesn't require any codec. `FileManager` is like
+`BytesManager` but is more efficient in many respects and is better at managing larger files (blobs).
 
 
 The [unit tests](https://github.com/gnahraf/stowkwik/tree/master/src/test/java/com/gnahraf/stowkwik) contain a mock example. See
@@ -59,3 +60,8 @@ Oct. 20 2019: Streaming support added in `HexPathTree`, a subclass of `HexPath` 
 * Command line tool
 
 Nov. 3 2019: Created `storex` a command line tool for exploring an existing store.
+
+Nov. 10 2019: Created `stowd` a command line background process that stows files away by monitoring one or more directories for new files and moving them to the store. Next steps:
+
+* Add configurable output/logging to `stowd`
+* Command line tool (`stow` ?) for stowing files that can be piped in the shell for input filepaths and output mappings

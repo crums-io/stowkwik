@@ -554,7 +554,7 @@ public class HexPathTree extends HexPath {
           prefix = prefix.substring(0, 
               Math.min(prefix.length(), (hdir.getDepth() + 1)*2) );
           
-          int j = Collections.binarySearch(Lists.transform(subdirs, e -> e.getInheritedValue()), prefix);
+          int j = Collections.binarySearch(Lists.map(subdirs, e -> e.getInheritedValue()), prefix);
           if (j < 0)
             j = -j - 1;
           if (j == subdirs.size())

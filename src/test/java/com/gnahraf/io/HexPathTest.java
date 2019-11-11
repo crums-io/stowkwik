@@ -284,5 +284,24 @@ public class HexPathTest extends IoTestCase {
     assertEquals(dir00, file.getParentFile().getParentFile());
     
   }
+  
+  
+  @Test
+  public void testFileRenameAssumption() throws IOException {
+    File dir = getMethodOutputFilepath(new Object() { });
+    assertTrue(dir.mkdir());
+    File subdir = new File(dir, "subdir");
+    assertTrue(subdir.mkdir());
+    File source = new File(dir, "source");
+    assertTrue(source.createNewFile());
+    assertTrue(source.exists());
+    File target = new File(subdir, "target");
+    String sName = source.getName();
+    source.renameTo(target);
+    assertTrue(target.exists());
+    assertFalse(source.exists());
+    assertEquals(sName, source.getName());
+    assertEquals(dir, source.getParentFile());
+  }
 
 }

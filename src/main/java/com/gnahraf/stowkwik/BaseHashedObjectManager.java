@@ -12,7 +12,9 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.gnahraf.io.Channels;
@@ -46,6 +48,7 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
    * @param hashAlgo
    *            the name of the cryptographic hashing algorithm
    *            (suitable for {@linkplain MessageDigest#getInstance(String)})
+   *            E.g. <tt>MD5</tt>, <tt>SHA-1</tt>, <tt>SHA-256</tt>, ..
    * 
    * @see BaseHashedObjectManager#DEFAULT_HASH_ALGO
    */
@@ -54,9 +57,33 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
     this.hashAlgo = hashAlgo;
     if (hashAlgo == null)
       throw new IllegalArgumentException("null hashAlgo");
-    // make sure the digest algo is supported
-    newDigest();
+    sanityCheckAlgo();
     hexPath.primeRoot();
+  }
+  
+  
+  protected void sanityCheckAlgo() {
+    
+    String sampleId;
+    {
+      List<String> sampleIds = streamIds().limit(1).collect(Collectors.toList());
+      if (sampleIds.isEmpty()) {
+        newDigest(); // make sure the digest algo is supported (method was not exercised)
+        return;
+      }
+      sampleId = sampleIds.get(0);
+    }
+    
+
+    T object = read(sampleId);
+    if (!sampleId.equals(getId(object)))
+      throw new IllegalArgumentException(
+          "hash algo " + hashAlgo + " appears not to match that used for existing data");
+  }
+  
+  
+  public File getRootDir() {
+    return hexPath.getRoot();
   }
   
 
@@ -228,7 +255,7 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
     return digest;
   }
   
-  protected final ThreadLocal<Map<String, MessageDigest>> digestMap = new ThreadLocal<>() {
+  protected final static ThreadLocal<Map<String, MessageDigest>> digestMap = new ThreadLocal<>() {
     @Override
     protected Map<String, MessageDigest> initialValue() {
       return new HashMap<>(2);

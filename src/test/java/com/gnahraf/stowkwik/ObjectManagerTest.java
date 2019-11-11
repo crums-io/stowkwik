@@ -12,7 +12,6 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
-import com.gnahraf.io.FilepathGenerator;
 import com.gnahraf.test.IoTestCase;
 
 
@@ -22,7 +21,7 @@ import com.gnahraf.test.IoTestCase;
  * Sorry, don't believe adding cognitive load for understanding test cases. But
  * duplication sucks blood
  * 
- * @see #makeStore(FilepathGenerator)
+ * @see #makeStore(File)
  */
 public abstract class ObjectManagerTest extends IoTestCase {
   

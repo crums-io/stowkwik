@@ -16,9 +16,10 @@ public class Lists {
   private Lists() { }
   
   
-  public static <U,V> List<V> transform(List<U> source, Function<U, V> mapper) {
+  public static <U, V> List<V> map(List<U> source, Function<U, V> mapper) {
     return new ListView<U, V>(source, mapper);
   }
+  
   
   protected static class ListView<U, V> extends AbstractList<V> {
     
