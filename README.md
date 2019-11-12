@@ -52,7 +52,7 @@ I had already done.)
 
 Oct. 6 2019: Pushing to make `HexPath` a drop-in replacement for `FilepathGenerator` so that it'll scale to whatever the file system can handle.
 
-Oct. 12 2019: Working on a `java.util.Splitarator` that supports streaming files mananged under a `HexPath` instance. This is complicated by the fact there are multiple possible directory paths for a given hash value since `HexPath` grows the directory structure as more objects are dropped in.
+Oct. 12 2019: Working on a `java.util.Spliterator` that supports streaming files mananged under a `HexPath` instance. This is complicated by the fact there are multiple possible directory paths for a given hash value since `HexPath` grows the directory structure as more objects are dropped in.
 
 Oct. 20 2019: Streaming support added in `HexPathTree`, a subclass of `HexPath` and dropped in as a replacement for the flat directory used by the `ObjectManager`s. Tested with 64k files. Next steps:
 
