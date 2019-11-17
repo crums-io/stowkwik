@@ -87,6 +87,9 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
   }
   
 
+  public String getFileExtension() {
+    return hexPath.getFileExtension();
+  }
   
 
   
@@ -138,6 +141,25 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
   @Override
   public Stream<String> streamIds() {
     return hexPath.stream().map(e -> e.hex);
+  }
+  
+  
+  
+  @Override
+  public Stream<String> streamIds(String idPrefix) {
+    return hexPath.streamStartingFrom(idPrefix).map(e -> e.hex);
+  }
+  
+  
+  @Override
+  public Stream<T> streamObjects() {
+    return hexPath.stream().map(e -> readObjectFile(e.file));
+  }
+  
+  
+  @Override
+  public Stream<T> streamObjects(String idPrefix) {
+    return hexPath.streamStartingFrom(idPrefix).map(e -> readObjectFile(e.file));
   }
   
   

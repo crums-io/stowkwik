@@ -6,22 +6,32 @@ package com.gnahraf.stowkwik;
 import java.io.File;
 import java.io.IOException;
 
+import com.gnahraf.io.ClosingStack;
 import com.gnahraf.io.DirectoryWatcher;
+import com.gnahraf.stowkwik.log.WriteLog;
+import com.gnahraf.stowkwik.log.WriteLoggedObjectManager;
+import com.gnahraf.stowkwik.log.WriteLogs;
+import com.gnahraf.util.cc.ThreadUtils;
 
 /**
- * 
+ * A {@linkplain FileManager} with declarable watch directories (called "stow" directories)
+ * from which files can be input. Lo key cross process input mechanism.
+ * <p/>
  */
-public class FileStower extends FileManager implements AutoCloseable {
+public class FileStower implements AutoCloseable {
   
   /**
    * Name of the default stow directory. It's a subdirectory
    * of an instance's {@linkplain #getRootDir() root}.
    */
   public final static String DEFAULT_STOW_DIR = "stow";
-  
-  
-  
+
+  private final Object closeLock = new Object();
+
+  private final FileManager fileManager;
+  private final WriteLoggedObjectManager<File> managerView;
   private final DirectoryWatcher watcher;
+  
   
 
   /**
@@ -29,7 +39,7 @@ public class FileStower extends FileManager implements AutoCloseable {
    * @param ext
    */
   public FileStower(File dir, String ext) {
-    this(dir, ext, DEFAULT_HASH_ALGO);
+    this(dir, ext, FileManager.DEFAULT_HASH_ALGO);
   }
 
   /**
@@ -37,12 +47,18 @@ public class FileStower extends FileManager implements AutoCloseable {
    * @param ext
    */
   public FileStower(File dir, String ext, String hashAlgo) {
-    super(dir, ext, hashAlgo, true);
+    this.fileManager= new FileManager(dir, ext, hashAlgo, true);
+    WriteLog wlog = WriteLogs.newPlainTextWriteLog(fileManager);
+    
+    this.managerView = new WriteLoggedObjectManager<>(fileManager, wlog);
+    
+    
+    
     DirectoryWatcher.Listener mover = new DirectoryWatcher.Listener() {
       
       @Override
       public void fileAdded(File file) {
-        write(file);
+        managerView.write(file);
         // TODO: configurable handler for pre-existing input
         if (file.exists())
           file.delete();
@@ -56,7 +72,7 @@ public class FileStower extends FileManager implements AutoCloseable {
    * The returned "abstract path name" may not yet exist.
    */
   public File getDefaultStowDirectory() {
-    return new File(getRootDir(), DEFAULT_STOW_DIR);
+    return new File(fileManager.getRootDir(), DEFAULT_STOW_DIR);
   }
   
   
@@ -83,13 +99,26 @@ public class FileStower extends FileManager implements AutoCloseable {
   }
   
   public void joinClose() throws InterruptedException {
-    watcher.joinWatch();
+    synchronized (closeLock) {
+      while (managerView.isOpen())
+        closeLock.wait();
+    }
   }
 
   @Override
   public void close() throws IOException {
-    watcher.close();
+    synchronized (closeLock) {
+      watcher.close();
+      // leave some time for the watcher thread to complete
+      try {
+        ThreadUtils.ensureSleepMillis(100);
+      } catch (InterruptedException ix) {
+        // noop
+      }
+      // close the write-log
+      managerView.close();
+      closeLock.notifyAll();
+    }
   }
-  
 
 }

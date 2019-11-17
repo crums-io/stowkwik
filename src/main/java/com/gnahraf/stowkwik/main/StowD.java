@@ -11,6 +11,7 @@ import static com.gnahraf.util.main.Args.help;
 import java.io.File;
 import java.io.PrintStream;
 
+import com.gnahraf.stowkwik.FileManager;
 import com.gnahraf.stowkwik.FileStower;
 import com.gnahraf.util.main.TablePrint;
 
@@ -49,7 +50,7 @@ public class StowD {
       
       String ext = getRequiredParam(args, EXT);
       
-      String algo = getValue(args, ALGO, FileStower.DEFAULT_HASH_ALGO);
+      String algo = getValue(args, ALGO, FileManager.DEFAULT_HASH_ALGO);
       
       String[] stowDirectories = getValues(args, STOW);
       
@@ -139,7 +140,7 @@ public class StowD {
     table.printRow(STOW + "=*", "path to stow directory (default {store root}/" + FileStower.DEFAULT_STOW_DIR + " )", OPT);
     table.printRow(null,        "Multiple directories may be specified as separate arguments.", null);
     out.println();
-    table.printRow(ALGO + "=*", "cryptographic hash algo (e.g. MD5, SHA-1, SHA-256). Default " + FileStower.DEFAULT_HASH_ALGO, OPT);
+    table.printRow(ALGO + "=*", "cryptographic hash algo (e.g. MD5, SHA-1, SHA-256). Default " + FileManager.DEFAULT_HASH_ALGO, OPT);
     
     out.println();
   }

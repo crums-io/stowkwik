@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import com.gnahraf.xcept.NotFoundException;
 
 /**
- * Base abstraction for a simple object store. 
+ * Base abstraction for a simple object store. It doesn't yet have a <tt>remove()</tt> method.
  * 
  * @param T the type of data this instance manages. At minimum, this
  *          requires that {@linkplain Object#equals(Object) Object.equals}
@@ -36,9 +36,9 @@ public abstract class ObjectManager<T> {
   
   
   /**
-   * Computes and return the ID of the given <tt>object</tt>.
-   * (I can't decide whether the object <em>has</em> to exist in the
-   * store--my current implementation doesn't care.)
+   * Computes and returns the ID of the given <tt>object</tt>. The object
+   * does not have to exist in the store. You can use this to determine what
+   * the return value of {@linkplain #write(Object)} will be.
    */
   public abstract String getId(T object);
   
@@ -67,7 +67,17 @@ public abstract class ObjectManager<T> {
   }
   
   
+  /**
+   * Returns a stream of object IDs in lexicographc order.
+   */
   public abstract Stream<String> streamIds();
+  
+  
+  /**
+   * Returns a stream of object IDs in lexicographc order starting with or greater than
+   * <tt>idPrefix</tt>.
+   */
+  public abstract Stream<String> streamIds(String idPrefix);
   
   
   /**
@@ -108,9 +118,28 @@ public abstract class ObjectManager<T> {
   
 
   
-  public Stream<T> streamObjects() {
-    return streamIds().map(hash -> read(hash));
-  }
+  /**
+   * Streams objects in the store in order of their IDs. Logically equivalent to
+   * this 2-pass implementation.
+   * <tt><pre>
+      public Stream<T> streamObjects() {
+        return streamIds().map(hash -> read(hash));
+      }
+   * </pre></tt>
+   */
+  public abstract Stream<T> streamObjects();
+  
+  
+  /**
+   * Returns objects in the store in order of their IDs starting with or greater than
+   * <tt>idPrefix</tt>. Logically equivalent to this 2-pass implementation.
+   * <tt><pre>
+      public Stream<T> streamObjects(String idPrefix) {
+        return streamIds(idPrefix).map(hash -> read(hash));
+      }
+   * </pre></tt>
+   */
+  public abstract Stream<T> streamObjects(String idPrefix);
   
   
   
@@ -182,6 +211,11 @@ public abstract class ObjectManager<T> {
           public Stream<String> streamIds() {
             return manager.streamIds();
           }
+          
+          @Override
+          public Stream<String> streamIds(String idPrefix) {
+            return manager.streamIds(idPrefix);
+          }
 
 
           @Override
@@ -199,6 +233,18 @@ public abstract class ObjectManager<T> {
           @Override
           public boolean containsId(String id) {
             return manager.containsId(id);
+          }
+          
+
+          @Override
+          public Stream<V> streamObjects() {
+            return manager.streamObjects().map(u -> readMapper.apply(u));
+          }
+          
+
+          @Override
+          public Stream<V> streamObjects(String idPrefix) {
+            return manager.streamObjects(idPrefix).map(u -> readMapper.apply(u));
           }
         };
   }
