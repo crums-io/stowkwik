@@ -21,7 +21,7 @@ container they live in. This is doubly important for objects that reference othe
 So with these obvious advantages to a hash based file naming scheme, I'd drop these files in a same directory.
 This works fine until hitting files in the tens of thousands. After that things slow down noticeably, particularly
 if your view of the directory needs to remain somewhat up-to-date. Maybe this limit is not a bad thing: it forces a
-programmer to find the data a more permanent home. Still, it had always planned a fix to that limit, and knowing I could
+programmer to find the data a more permanent home. Still, I had always planned a fix to that limit, and knowing I could
 I thought I might roll a library around it.
 
 ## File Naming Scheme
@@ -58,8 +58,8 @@ have to build yourself. (Sorry.)
 ### Suggested "Installation"
 
 Though this is a *programming library* the last step above creates a couple of command line tools (still in the rough),
-`storex` and `stowd`. To use these, you're going need to adjust your `$PATH` environment variable. My usual practice with
-apps built by maven is to include `$HOME/bin` on the `$PATH` and then
+`storex` and `stowd`. To use these, you're going need to adjust your `PATH` environment variable. My usual practice with
+apps built by maven is to include `$HOME/bin` on the `PATH` and then
 
 > `$ cp -rf target/appassembler/* ~`
 
@@ -71,7 +71,7 @@ To use this library with other maven projects do the same you did with `io-utils
 
 ### Javadoc
 
-My main use for annotating code with javadoc comments is for the context bubbles Eclipse creates on hovering the mouse
+My main use for annotating code with javadoc comments is for the context bubbles my IDE pops on hovering the mouse
 over code. I comment more than most tho, so generating this might help. Incant the following in the project directory:
 
 > `$ mvn javadoc:javadoc`
@@ -112,7 +112,7 @@ watches for new files in any number of user-defined "stow directories" as input 
 It also sports a human readable write-log which allows items in the store to be retrieved in the order they were written.
 These stow directories, in turn, can be used for language-agnostic, cross-process input.
 
-`storex` is a command line tool for exploring an existing store. Both tools sport a `-help` feature that hopefully makes them
+`storex` is a command line tool for exploring an existing store. Both tools have a `-help` feature that hopefully makes them
 self-explanatory.
 
 ### Unit Tests
