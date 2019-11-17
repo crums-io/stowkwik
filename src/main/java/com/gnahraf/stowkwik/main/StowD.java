@@ -116,7 +116,10 @@ public class StowD {
     System.out.println();
     System.out.println("Watches one or more \"stow\" directories for newly dropped files which are then");
     System.out.println("archived (moved) under a hex tree directory structure. Files are named after the");
-    System.out.println("crypotgraphic hash of their contents.");
+    System.out.println("crypotgraphic hash of their contents. Note you should only ever MOVE a file to");
+    System.out.println("a stow directory; you should never again write to a file after it's been moved");
+    System.out.println("there. It's easy to forget: this means NEVER COPY files directly into a stow");
+    System.out.println("directory.");
     System.out.println();
     printUsage(System.out);
     printLegend(System.out);
