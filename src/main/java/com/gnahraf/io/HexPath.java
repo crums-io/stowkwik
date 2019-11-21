@@ -12,11 +12,14 @@ import java.io.File;
  * A hexadecimal directory scheme used to partition hex-based filenames
  * in subdirectories. The intended use is for files named after a cryptographic
  * hash of their state, so the inputs are expected to be randomly distributed.
- * <p/>
+ * <p>
  * One nice thing about naming files by their hashes is that if that you can safely
  * rename them without worrying you might lose them. Another is that a bit of edge-case
  * duplication (as in occasionally having 2 copies of the same file) is okay. (There isn't
  * any here in this class, but just saying..)
+ * </p>
+ * 
+ * @see HexPathTree
  */
 public class HexPath {
   

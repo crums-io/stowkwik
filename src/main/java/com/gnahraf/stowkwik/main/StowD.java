@@ -140,7 +140,7 @@ public class StowD {
     table.printRow(NEW + "=true",  "create the root directory; ignoring case, any value", OPT);
     table.printRow(null,        "other than 'true' means 'false'", null);
     out.println();
-    table.printRow(STOW + "=*", "path to stow directory (default {store root}/" + FileStower.DEFAULT_STOW_DIR + " )", OPT);
+    table.printRow(STOW + "=*", "path to stow directory (default $" + DIR + "/" + FileStower.DEFAULT_STOW_DIR + " )", OPT);
     table.printRow(null,        "Multiple directories may be specified as separate arguments.", null);
     out.println();
     table.printRow(ALGO + "=*", "cryptographic hash algo (e.g. MD5, SHA-1, SHA-256). Default " + FileManager.DEFAULT_HASH_ALGO, OPT);
@@ -155,6 +155,7 @@ public class StowD {
     legend.setIndentation(11);
     legend.println("______");
     legend.println("Legend:");
+    legend.println("------");
     out.println();
     legend.printRow("*", "denotes an arbitrary input value (not a wildcard)");
     legend.printRow(REQ, "denotes a required name={value} arg");

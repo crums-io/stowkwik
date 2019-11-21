@@ -44,7 +44,9 @@ that subdirectory. (See [`HexPath`](https://github.com/gnahraf/stowkwik/blob/mas
 for implementation details.)
 
 You can overlay multiple stores on top of the same directory structure (as long as their extensions differ). This is not
-recommended unless the cardinality of one extension is of the same order of magnitude as that of the other.
+recommended unless the cardinality of one extension is of the same order of magnitude as that of the other. The reason why
+this is mentioned is that there are a good number of cases when indeed 2 extensions have very nearly the same number of objects.
+In that case, overlaying saves directory structure overhead.
 
 ## Build
 
@@ -58,8 +60,8 @@ have to build yourself. (Sorry.)
 ### Suggested "Installation"
 
 Though this is a *programming library* the last step above creates a couple of command line tools (still in the rough),
-`storex` and `stowd`. To use these, you're going need to adjust your `PATH` environment variable. My usual practice with
-apps built by maven is to include `$HOME/bin` on the `PATH` and then
+`stowex` and `stowd`. To use these, you'll need to adjust your `PATH` environment variable. My usual practice with
+apps built by maven is to include `$HOME/bin` on my `PATH` and then
 
 > `$ cp -rf target/appassembler/* ~`
 
@@ -86,33 +88,52 @@ which is a pain in the arse. (Note the funky version number--not a typo :/ )
 
 This [API](https://github.com/gnahraf/stowkwik/tree/master/src/main/java/com/gnahraf/stowkwik) calls an object store an `ObjectManager`. Right now there are 4 types of these:
 
+* `FileManager`
+* `BytesManager`
 * `BinaryObjectManager`
 * `XmlObjectManager`
-* `BytesManager`
-* `FileManager`
 
-Like the names suggest, the first is machine readable, the second is human readable. Computing hash state from
-machine readable byte sequences is usually straight forward since in most applications if two objects' byte
-sequences are different then their states are different; when state is human readable however, there are usually
-multiple valid representations of the same state (white space, comments, item order, etc.), so there's a need to cannonicalize
-object state. This is one role of an `Encoder`: it writes an object's state unambiguously to a byte sequence and
+All these are views on a managed [`HexPath`](https://github.com/gnahraf/stowkwik/blob/master/src/main/java/com/gnahraf/io/HexPath.java)
+directory structure.
+
+`FileManager` is the simplest and requires virtually no setup. It uses a file's raw contents to compute its hash. It supports 2
+*write* modes: file moving (renaming), and file copying. The former is preferred (better failure behavior). Because it's rules are
+so simple, you can create one with the `stowd` tool provided, and explore its contents either with conventional shell tools or
+the `stowex` command line tool. See below. So you don't have to code Java to use this; for the higher level object managers that
+follow you do.
+
+`BytesManager` is much like a `FileManager`--e.g. require's no user defined codec, except from the programmer's perspective,
+you're dealing with `java.nio.ByteBuffer`s instead of files. Now if you're reading and writing raw bytes in Java, you'll need to
+marshall/unmarshall these to values and objects somehow. Or you might consider the next abstraction.
+
+`BinaryObjectManager` is an object manager that uses a user defined `Codec` to marshall/unmarshall objects in the store. These
+are quick to code, but their down side is that the data in the file is no longer human readable. The next (and currently last)
+abstraction is a compromise to readability.
+
+`XmlObjectManager` takes a user defined `Encoder` (a `Codec` that knows how to write, not necessarily read) for a Java Bean (a
+Java class with mutable public members). This creates slightly bloated, but readable files. The `Encoder` is there in case the
+Java XML library outputs differently (order, indentation, whitespace, etc.) in future versions. If you prefer to work with *immutable* types (as this author does), you can then *map* this object manager to one for the immutable type using the static
+`ObjectManager.map(..)` function.
+
+> Usually computing hash state from machine readable byte sequences is straight forward since in most applications
+if two objects' byte sequences are different then their states are different; when state is human readable however, there are
+usually multiple valid representations of the same state (white space, comments, item order, etc.), so there's a need to
+cannonicalize object state. This is one role of an `Encoder`: it writes an object's state unambiguously to a byte sequence and
 is used to compute the object's hash. A `Codec` is an `Encoder` that can read back what it writes.
 
-`BinaryObjectManager` uses a type-specific `Codec`; `XmlObjectManager` still needs a type-specific `Encoder`
-in order to unamibigously compute hash state (we don't want an object's hash to change if we switch XML libraries, for instance. Dev note: should be able to automate). If on the other hand, you want to marshal objects elsewhere and just want
-to throw blobs of bytes into a store, you can use a `BytesManager` which doesn't require any codec. `FileManager` is like
-`BytesManager` but is more efficient in many respects and is better at managing larger files (blobs).
 
 All these stores can be traversed in lexicographic order of object hashes. And they can be traversed in *parallel* as
 the API takes advantage of the java streaming API. An optional, human readable *write-log* can be specified
 in order to keep track of the order in which hashes (files) were added.
 
-Since `FileManager` is so simple, a command line interface for it seemed feasible: `stowd` is a background process that
-watches for new files in any number of user-defined "stow directories" as input and which are then *moved* to a store.
+### Command Line Tools
+
+`stowd` is a background process that watches for new files in any number of user-defined "stow directories" as input and which
+are then *moved* to a store (`FileManager`). It requires no programming or setup since it uses a file's raw contents to compute hash.
 It also sports a human readable write-log which allows items in the store to be retrieved in the order they were written.
 These stow directories, in turn, can be used for language-agnostic, cross-process input.
 
-`storex` is a command line tool for exploring an existing store. Both tools have a `-help` feature that hopefully makes them self-explanatory.
+`stowex` is a command line tool for reading and exploring an existing store. Both tools have a `-help` feature that hopefully makes them self-explanatory.
 
 ### Unit Tests
 
@@ -128,6 +149,7 @@ The [unit tests](https://github.com/gnahraf/stowkwik/tree/master/src/test/java/c
 
 Practically the limits of your storage medium. This uses a pretty scalable, deeper as you grow, directory structure. If maintaining a write log (so as to keep track of order), you need to swap out log files when you hit around 2B files written.
 
+---
 ## Milestones
 
 Oct. 6 2019: Pushing to make `HexPath` a drop-in replacement for `FilepathGenerator` so that it'll scale to whatever the file system can handle.
@@ -139,7 +161,7 @@ Oct. 20 2019: Streaming support added in `HexPathTree`, a subclass of `HexPath` 
 * `BytesManager`: a straight file-contents based object manager (no marshalling)
 * Command line tool
 
-Nov. 3 2019: Created `storex` a command line tool for exploring an existing store.
+Nov. 3 2019: Created `stowex` a command line tool for exploring an existing store.
 
 Nov. 10 2019: Created `stowd` a command line background process that stows files away by monitoring one or more directories for new files and moving them to the store. Next steps:
 

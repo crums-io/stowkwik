@@ -26,13 +26,13 @@ import com.gnahraf.util.main.TablePrint;
 /**
  * 
  */
-public class Storex {
+public class StowEx {
   
-  public final static String PROG_NAME = Storex.class.getSimpleName().toLowerCase(Locale.ROOT);
+  public final static String PROG_NAME = StowEx.class.getSimpleName().toLowerCase(Locale.ROOT);
 
   private int printOpts;
   
-  private Storex(int printOpts) {
+  private StowEx(int printOpts) {
     this.printOpts = printOpts;
   }
 
@@ -120,7 +120,7 @@ public class Storex {
       if (printOpts < 1 || printOpts > MAX_OPTS)
         exitInputError(PRINT + "=" + printOpts + " outside valid range [1," + MAX_OPTS + "]");
 
-      final Storex instance = new Storex(printOpts);
+      final StowEx instance = new StowEx(printOpts);
       
       HexPathTree hexPath = new HexPathTree(root, ext);
       

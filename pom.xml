@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.gnahraf</groupId>
   <artifactId>stowkwik</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   
   
   
@@ -28,8 +28,8 @@
           <programs>
             
             <program>
-              <mainClass>com.gnahraf.stowkwik.main.Storex</mainClass>
-              <id>storex</id>
+              <mainClass>com.gnahraf.stowkwik.main.StowEx</mainClass>
+              <id>stowex</id>
             </program>
             
             <program>
