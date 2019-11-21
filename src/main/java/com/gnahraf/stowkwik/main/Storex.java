@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 import com.gnahraf.io.HexPathTree;
 import com.gnahraf.io.HexPathTree.Entry;
+import com.gnahraf.stowkwik.log.PlainTextWriteLogReader;
+import com.gnahraf.stowkwik.log.WriteLogs;
 import com.gnahraf.util.IntegralStrings;
 import com.gnahraf.util.main.TablePrint;
 
@@ -28,7 +30,7 @@ public class Storex {
   
   public final static String PROG_NAME = Storex.class.getSimpleName().toLowerCase(Locale.ROOT);
 
-  private final int printOpts;
+  private int printOpts;
   
   private Storex(int printOpts) {
     this.printOpts = printOpts;
@@ -36,6 +38,13 @@ public class Storex {
 
   
   void printEntry(Entry entry, PrintStream out) throws UncheckedIOException {
+    printEntry(null, entry, out);
+  }
+
+  
+  void printEntry(String timestamp, Entry entry, PrintStream out) throws UncheckedIOException {
+    if (timestamp != null && flagged(LOG_DATE_OPT))
+      out.println(timestamp);
     if (flagged(HEX_OPT))
       out.println(entry.hex);
     if (flagged(PATH_OPT))
@@ -86,14 +95,26 @@ public class Storex {
       }
       
       String ext = getRequiredParam(args, EXT);
-      String hex = getValue(args, HEX, null);
-      String start = getValue(args, START, null);
+      String hex, start, log;
+      {
+        int nullCount = 0;
+        hex = getValue(args, HEX, null);
+        if (hex == null)
+          ++nullCount;
+        start = getValue(args, START, null);
+        if (start == null)
+          ++nullCount;
+        log = getValue(args, LOG, null);
+        if (log == null)
+          ++nullCount;
+        
+        if (nullCount != 2)
+          exitInputError("One of " + HEX + "=.., " + START + "=.., or " + LOG + "=.. must be specified");
+      }
       
-      if (hex == null && start == null || hex != null && start != null)
-        exitInputError("Either " + HEX + "={value} or " + START + "={value} must be specified");
+      int limit = getIntValue(args, LIMIT, DEFAULT_LIMIT);
       
-      boolean unique = hex != null;
-      final String prefix = IntegralStrings.canonicalizeHex(unique ? hex : start);
+      
       
       int printOpts = getIntValue(args, PRINT, DEFAULT_OPTS);
       if (printOpts < 1 || printOpts > MAX_OPTS)
@@ -103,7 +124,9 @@ public class Storex {
       
       HexPathTree hexPath = new HexPathTree(root, ext);
       
-      if (unique) {
+      if (hex != null) {
+        
+        String prefix = IntegralStrings.canonicalizeHex(hex);
         
         List<Entry> hits = hexPath.streamStartingFrom(prefix)
             .limit(2).filter(e -> e.hex.startsWith(prefix)).collect(Collectors.toList());
@@ -128,11 +151,27 @@ public class Storex {
           throw new AssertionError(hits.toString());
         }
         
-      } else {
-
-        int limit = getIntValue(args, LIMIT, DEFAULT_LIMIT);
+      } else if (start != null) {
+        
+        String prefix = IntegralStrings.canonicalizeHex(start);
         
         hexPath.streamStartingFrom(prefix).limit(limit).forEach(e -> instance.printEntry(e, System.out));
+      
+      } else { // (log != null
+        
+        if (!WriteLogs.hasPlainTextLogFile(hexPath))
+          exitInputError("No log file found");
+        
+        instance.printOpts = getIntValue(args, PRINT, DEFAULT_OPTS_LOG);
+        
+        try (PlainTextWriteLogReader logReader = WriteLogs.newPlainTextWriteLogReader(root, ext)) {
+          
+          logReader.listFrom(log).stream().limit(limit).
+            forEach(
+                le -> instance.printEntry(le.timestamp, hexPath.getEntry(le.hex), System.out) );
+          
+        }
+        
       }
     
     } catch (IllegalArgumentException x) {
@@ -144,6 +183,7 @@ public class Storex {
       String message = e.getMessage();
       message = e.getClass().getSimpleName() + (message == null ? "" : " "  + message);
       printError(message);
+      e.printStackTrace(System.err);
       System.exit(2);
     }
     
@@ -194,34 +234,48 @@ public class Storex {
     TablePrint table = new TablePrint(out, 10, 65, 3);
     table.setIndentation(1);
     table.printRow(EXT + "=*", "the file extension (include the period)", REQ);
+    out.println();
     table.printRow(DIR + "=*", "store root directory (must already exist)", REQ);
-    table.printRow(HEX + "=*", "outputs a single entry using this unambiguous prefix", REQ_STAR);
+    out.println();
+    table.printRow(HEX + "=*", "outputs a single entry using this unambiguous prefix", REQ_CH);
     table.printRow(null,       "of its hexadecimal ID", null);
-    table.printRow(START + "=*", "lists entries in ascending order of hex IDs starting from", REQ_STAR);
+    out.println();
+    table.printRow(START + "=*", "lists entries in ascending order of hex IDs starting from", REQ_CH);
     table.printRow(null,         "given hex (prefix OK)", null);
+    out.println();
+    table.printRow(LOG + "=*", "lists entries in log timestamp order starting from the", REQ_CH);
+    table.printRow(null,         "given date (prefix OK)", null);
+    out.println();
     table.printRow(PRINT + "=*", "sets what's to be output. Valid values range in [1," + MAX_OPTS + "]", OPT);
-    table.printRow(null,         "(default " + DEFAULT_OPTS + ") and are bit field combinations of the following", null);
+    table.printRow(null,         "(defaults to " + DEFAULT_OPTS + " for '" + HEX + "'/'" + START + "'; " +
+                                  DEFAULT_OPTS_LOG + " for '" + LOG + "'). Values are", null);
+    table.printRow(null,         "interpreted as bit field combinations of the following:", null);
+    out.println();
     {
       TablePrint subTable = new TablePrint(out, 5, 65);
-      subTable.setIndentation(10);
-      subTable.printRow(1, "hex ID");
-      subTable.printRow(2, "file path");
-      subTable.printRow(4, "file contents (assuming it's text)");
+      subTable.setIndentation(12);
+      subTable.printRow(HEX_OPT, "hex ID");
+      subTable.printRow(PATH_OPT, "file path");
+      subTable.printRow(CONTENTS_OPT, "file contents (assuming it's text)");
+      subTable.printRow(LOG_DATE_OPT, "write-log timestamp (noop if not used with '" + LOG + "')");
     }
+    out.println();
     table.printRow(LIMIT + "=*", "max number of entries to output (default " + DEFAULT_LIMIT + ")", OPT);
     
     out.println();
   }
   
   private static void printLegend(PrintStream out) {
+    out.println();
     TablePrint legend = new TablePrint(out, 5, 65);
     legend.setIndentation(11);
     legend.println("______");
     legend.println("Legend:");
+    legend.println("------");
     out.println();
     legend.printRow("*", "denotes an arbitrary input value (not a wildcard)");
     legend.printRow(REQ, "denotes a required name={value} arg");
-    legend.printRow(REQ_STAR, "denotes a required one-of-many name={value} arg");
+    legend.printRow(REQ_CH, "denotes a required one-of-many name={value} arg");
     legend.printRow(null, "(grouped together in adjacent rows)");
     out.println();
   }
@@ -231,19 +285,22 @@ public class Storex {
   private final static String DIR = "dir";
   private final static String HEX = "hex";
   private final static String START = "start";
+  private final static String LOG = "log";
   private final static String LIMIT = "limit";
   private final static String PRINT = "print";
   
   private final static String REQ = "R";
-  private final static String REQ_STAR = "R*";
+  private final static String REQ_CH = "R?";
   private final static String OPT = "";
   
   
   private final static int HEX_OPT = 1;
   private final static int PATH_OPT = 2;
   private final static int CONTENTS_OPT = 4;
+  private final static int LOG_DATE_OPT = 8;
+  private final static int MAX_OPTS = 2 * LOG_DATE_OPT - 1;
   private final static int DEFAULT_OPTS = HEX_OPT + PATH_OPT;
-  private final static int MAX_OPTS = 2 * CONTENTS_OPT - 1;
+  private final static int DEFAULT_OPTS_LOG = DEFAULT_OPTS + LOG_DATE_OPT;
   private final static int DEFAULT_LIMIT = 10;
 
 }

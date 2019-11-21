@@ -20,8 +20,15 @@ import java.time.Instant;
  *    .
  *    .
  * </pre></tt>
+ * 
+ * @see PlainTextWriteLogReader
  */
 public class PlainTextWriteLog implements WriteLog {
+  
+  public final static char TIME_HASH_DELIMIT = ' ';
+  public final static char ENTRY_END = '\n';
+  
+  
   
   private final FileWriter writer;
   
@@ -41,9 +48,9 @@ public class PlainTextWriteLog implements WriteLog {
     try {
       
       writer.write(now, 0, now.length() - 8);
-      writer.write(' ');
+      writer.write(ENTRY_END);
       writer.write(id);
-      writer.write('\n');
+      writer.write(ENTRY_END);
       writer.flush();
       
     } catch (IOException iox) {

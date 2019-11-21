@@ -112,8 +112,7 @@ watches for new files in any number of user-defined "stow directories" as input 
 It also sports a human readable write-log which allows items in the store to be retrieved in the order they were written.
 These stow directories, in turn, can be used for language-agnostic, cross-process input.
 
-`storex` is a command line tool for exploring an existing store. Both tools have a `-help` feature that hopefully makes them
-self-explanatory.
+`storex` is a command line tool for exploring an existing store. Both tools have a `-help` feature that hopefully makes them self-explanatory.
 
 ### Unit Tests
 
@@ -127,7 +126,7 @@ The [unit tests](https://github.com/gnahraf/stowkwik/tree/master/src/test/java/c
 
 ## Limits
 
-Practically the limits of your storage medium. This uses a pretty scalable, deeper as you grow, directory structure.
+Practically the limits of your storage medium. This uses a pretty scalable, deeper as you grow, directory structure. If maintaining a write log (so as to keep track of order), you need to swap out log files when you hit around 2B files written.
 
 ## Milestones
 
@@ -146,3 +145,6 @@ Nov. 10 2019: Created `stowd` a command line background process that stows files
 
 * Add configurable output/logging to `stowd`
 * Command line tool (`stow` ?) for stowing files that can be piped in the shell for input filepaths and output mappings
+
+Nov. 20 2019: Added a random-access list interface to the write-log. Because the write-log is chronologically ordered, you
+can binary search this list.

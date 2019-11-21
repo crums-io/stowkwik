@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 import com.gnahraf.io.Files;
+import com.gnahraf.io.HexPath;
 import com.gnahraf.stowkwik.BaseHashedObjectManager;
 
 /**
@@ -17,21 +18,49 @@ public class WriteLogs {
   
   private WriteLogs() {  }
   
-  
+  /**
+   * Name of the log subdirectory under root.
+   */
   public final static String LOG_DIR = "log";
   public final static String WLOG_PREFIX = "wlog";
   public final static String WLOG_PLAINTEXT_EXT = ".txt";
   public final static String WLOG_TABLE_EXT = ".tbl";
   
   
+  /**
+   * Returns a path to the log file for the for the given root <tt>dir</tt> and extension <tt>ext</tt>.
+   * On return the log subdirectory is guaranteed to exist; the log file itself is not created, so it
+   * may or may not exist.
+   * 
+   * @see #LOG_DIR
+   */
   public static File declarePlainTextLogFile(File dir, String ext) {
     return declareLogFile(dir, ext, WLOG_PLAINTEXT_EXT);
   }
   
   
+  /**
+   * Determines whether there's an existing plain text log file.
+   * <p>
+   * FIXME: Note this has a side effect I didn't bother to fix: creates the log subdirectory.
+   * </p>
+   */
   public static boolean hasPlainTextLogFile(BaseHashedObjectManager<?> manager) {
     return
         declarePlainTextLogFile(manager.getRootDir(), manager.getFileExtension())
+        .isFile();
+  }
+  
+
+  /**
+   * Determines whether there's an existing plain text log file.
+   * <p>
+   * FIXME: Note this has a side effect I didn't bother to fix: creates the log subdirectory.
+   * </p>
+   */
+  public static boolean hasPlainTextLogFile(HexPath hexPath) {
+    return
+        declarePlainTextLogFile(hexPath.getRoot(), hexPath.getFileExtension())
         .isFile();
   }
   
@@ -41,6 +70,16 @@ public class WriteLogs {
     try {
       File logFile = declarePlainTextLogFile(manager.getRootDir(), manager.getFileExtension());
       return new PlainTextWriteLog(logFile);
+    } catch (IOException iox) {
+      throw new UncheckedIOException(iox);
+    }
+  }
+  
+  
+  public static PlainTextWriteLogReader newPlainTextWriteLogReader(File dir, String ext) throws UncheckedIOException {
+    try {
+      File logFile = declarePlainTextLogFile(dir, ext);
+      return new PlainTextWriteLogReader(logFile);
     } catch (IOException iox) {
       throw new UncheckedIOException(iox);
     }

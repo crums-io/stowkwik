@@ -23,6 +23,7 @@ import com.gnahraf.util.EasyList;
 import com.gnahraf.util.IntegralStrings;
 import com.gnahraf.util.Lists;
 import com.gnahraf.util.PrefixOrder;
+import com.gnahraf.xcept.NotFoundException;
 
 /**
  * A more capable <tt>HexPath</tt>. This builds on the base class (which was factored out
@@ -145,6 +146,15 @@ public class HexPathTree extends HexPath {
     public int hashCode() {
       return hex.hashCode();
     }
+  }
+  
+  
+  public Entry getEntry(String hex) throws NotFoundException {
+    File file = find(hex);
+    if (!file.exists())
+      throw new NotFoundException(hex);
+    
+    return new Entry(hex, file);
   }
   
   
