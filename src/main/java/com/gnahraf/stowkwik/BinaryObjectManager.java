@@ -19,8 +19,11 @@ public class BinaryObjectManager<T> extends HashedObjectManager<T> {
   private final Codec<T> codec;
 
   /**
-   * @param hashedPath
-   * @param encoder
+   * Creates a new instance with given binary codec.
+   * 
+   * @param dir   store directory
+   * @param ext   filename extension (w/o the dot) used to store objects of type {@code <T>}
+   * @param codec serialization interface for type {@code <T>}
    */
   public BinaryObjectManager(File dir, String ext, Codec<T> codec) {
     super(dir, ext, codec);
@@ -31,6 +34,27 @@ public class BinaryObjectManager<T> extends HashedObjectManager<T> {
   
   
   
+
+  /**
+   * Creates a new instance with given binary codec.
+   * 
+   * @param dir   store directory
+   * @param ext   filename extension (w/o the dot) used to store objects of type {@code <T>}
+   * @param codec serialization interface for type {@code <T>}
+   * @param hashAlgo the hashing algorithm, e.g. SHA-256
+   */
+  public BinaryObjectManager(File dir, String ext, Codec<T> codec, String hashAlgo) {
+    super(dir, ext, codec, hashAlgo);
+    this.codec = codec;
+  }
+
+
+
+
+
+
+
+
 
   @Override
   protected T readObjectFile(File file) throws UncheckedIOException {
