@@ -110,15 +110,21 @@ public class IntegralStrings {
   }
   
   
+  /**
+   * Returns a hex string representing the remaining contents of the
+   * given buffer. The positional state of the buffer is never modified.
+   * 
+   * @param buffer  with remaining bytes
+   * 
+   * @return lowercase hex string
+   */
   public static String toHex(ByteBuffer buffer) {
     int len = buffer.remaining();
     if (len == 0)
       throw new IllegalArgumentException("empty buffer: " + buffer);
-    buffer.mark();
     StringBuilder string = new StringBuilder(2 * len);
-    for (int i = len; i-- > 0; )
-      string.append(toHex(buffer.get()));
-    buffer.reset();
+    for (int i = buffer.position(); i < buffer.limit(); ++i)
+      string.append(toHex(buffer.get(i)));
     return string.toString();
   }
 
