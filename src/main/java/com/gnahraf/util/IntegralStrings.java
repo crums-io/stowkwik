@@ -92,6 +92,33 @@ public class IntegralStrings {
     
     return hex.toLowerCase(Locale.ROOT);
   }
+
+  
+  public static byte[] hexToBytes(CharSequence hex) {
+    return hexToBytes(hex, null);
+  }
+  
+  public static byte[] hexToBytes(CharSequence hex, byte[] out) {
+    int len = hex.length();
+    if ((len & 1) != 0)
+      throw new IllegalArgumentException("odd hex string length: " + hex);
+    if (out == null)
+      out = new byte[len / 2];
+    else if (out.length != len / 2)
+      throw new IllegalArgumentException("out.length != " + (len / 2) + " (hex.length()/2)");
+    
+    for (int index = 0; index < len; index += 2) {
+      int hi = Character.digit(hex.charAt(index), 16);
+      int lo = Character.digit(hex.charAt(index + 1), 16);
+      
+      if (hi == -1 || lo == -1)
+        throw new IllegalArgumentException("not hex: " + hex);
+      
+      out[index / 2] = (byte) ((hi << 4) + lo);
+    }
+    
+    return out;
+  }
   
   
   public static String toHex(byte b) {

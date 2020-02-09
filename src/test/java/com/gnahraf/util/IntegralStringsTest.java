@@ -6,6 +6,8 @@ package com.gnahraf.util;
 
 import static org.junit.Assert.*;
 
+import java.util.Random;
+
 import static com.gnahraf.util.IntegralStrings.*;
 
 import org.junit.Test;
@@ -23,6 +25,16 @@ public class IntegralStringsTest {
       assertTrue(n, isHex(n));
     for (String g : notHex)
       assertFalse(g, isHex(g));
+  }
+  
+  
+  @Test
+  public void testRoundtripHex() {
+    byte[] bytes = new byte[256];
+    new Random(22).nextBytes(bytes);
+    String hex = toHex(bytes);
+    byte[] out = hexToBytes(hex);
+    assertArrayEquals(bytes, out);
   }
 
 }

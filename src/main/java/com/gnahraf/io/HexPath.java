@@ -128,6 +128,9 @@ public class HexPath {
   }
   
   
+  /**
+   * Shorthand for {@linkplain #suggest(String, boolean) suggest(hex, true)}.
+   */
   public File suggest(String hex) {
     return suggest(hex, true);
   }
