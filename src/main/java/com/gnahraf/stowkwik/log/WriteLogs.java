@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
-import com.gnahraf.io.Files;
+import com.gnahraf.io.FileUtils;
 import com.gnahraf.io.HexPath;
 import com.gnahraf.stowkwik.BaseHashedObjectManager;
 
@@ -91,7 +91,7 @@ public class WriteLogs {
     if (ext == null || ext.isEmpty())
       throw new IllegalArgumentException("empty ext: '" + ext + "'");
     File logDir = new File(dir, LOG_DIR);
-    Files.ensureDir(logDir);
+    FileUtils.ensureDir(logDir);
     return new File(logDir, WLOG_PREFIX + ext + logTypeExt);
   }
   
