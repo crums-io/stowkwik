@@ -127,13 +127,19 @@ public class IntegralStrings {
   
   
   public static String toHex(byte[] bytes) {
+    StringBuilder string = new StringBuilder(2 * bytes.length);
+    return appendHex(bytes, string).toString();
+  }
+  
+  
+  public static StringBuilder appendHex(byte[] bytes, StringBuilder string) {
     int len = bytes.length;
     if (len == 0)
       throw new IllegalArgumentException("empty array: " + bytes);
-    StringBuilder string = new StringBuilder(2 * len);
+    
     for (int i = 0; i < len; ++i)
       string.append(toHex(bytes[i]));
-    return string.toString();
+    return string;
   }
   
   
@@ -146,13 +152,22 @@ public class IntegralStrings {
    * @return lowercase hex string
    */
   public static String toHex(ByteBuffer buffer) {
+    StringBuilder string = new StringBuilder(2 * buffer.remaining());
+    return appendHex(buffer, string).toString();
+  }
+  
+
+  
+  
+  public static StringBuilder appendHex(ByteBuffer buffer, StringBuilder string) {
     int len = buffer.remaining();
     if (len == 0)
       throw new IllegalArgumentException("empty buffer: " + buffer);
-    StringBuilder string = new StringBuilder(2 * len);
+    
     for (int i = buffer.position(); i < buffer.limit(); ++i)
       string.append(toHex(buffer.get(i)));
-    return string.toString();
+    return string;
+    
   }
 
 }
