@@ -4,6 +4,7 @@
 package com.gnahraf.util;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Function;
@@ -20,6 +21,26 @@ public class Isomorphism<U, V> {
   
   
   public final static Isomorphism<Path, File> PATH_TO_FILE = FILE_TO_PATH.reverse();
+  
+
+  
+  /**
+   * Byte array to array-backed buffer.
+   */
+  public final static Isomorphism<byte[], ByteBuffer> BYTES_TO_BUFFER =
+      declare(
+          array -> ByteBuffer.wrap(array),
+          buffer -> buffer.array(),
+          byte[].class,
+          ByteBuffer.class
+          );
+
+  
+  /**
+   * Array-backed buffer to byte array.
+   */
+  public final static Isomorphism<ByteBuffer, byte[]> BUFFER_TO_BYTES = BYTES_TO_BUFFER.reverse();
+  
   
   
   
@@ -38,6 +59,10 @@ public class Isomorphism<U, V> {
 
   /**
    * 
+   * @param mapping
+   * @param inverse
+   * @param sourceType
+   * @param targetType
    */
   public Isomorphism(Function<U, V> mapping, Function<V, U> inverse, Class<U> sourceType, Class<V> targetType) {
     this.mapping = Objects.requireNonNull(mapping, "mapping");

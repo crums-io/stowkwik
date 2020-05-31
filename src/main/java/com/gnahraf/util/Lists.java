@@ -18,10 +18,20 @@ public class Lists {
   private Lists() { }
   
   
+  /**
+   * Returns a read-only view.
+   */
   public static <U, V> List<V> map(List<U> source, Function<U, V> mapper) {
-    return new ListView<U, V>(source, mapper);
+    return new ReadOnlyView<U, V>(source, mapper);
   }
   
+  
+  /**
+   * Returns a read-write view.
+   */
+  public static <U, V> List<V> map(List<U> source, Isomorphism<U, V> iso) {
+    return new IsomorphicView<>(source, iso);
+  }
   
   
   
@@ -51,20 +61,12 @@ public class Lists {
   
 
   
-  
-  protected static class ListView<U, V> extends AbstractList<V> implements RandomAccess {
+  static abstract class BaseView<U,V> extends AbstractList<V> implements RandomAccess {
     
-    private final List<U> source;
-    private final Function<U, V> mapper;
+    protected final List<U> source;
     
-    protected ListView(List<U> source, Function<U, V> mapper) {
+    protected BaseView(List<U> source) {
       this.source = Objects.requireNonNull(source, "source");
-      this.mapper = Objects.requireNonNull(mapper, "mapper");
-    }
-
-    @Override
-    public V get(int index) {
-      return mapper.apply(source.get(index));
     }
 
     @Override
@@ -73,6 +75,51 @@ public class Lists {
     }
     
   }
+  
+  
+  
+  protected static class ReadOnlyView<U, V> extends BaseView<U, V> {
+    
+    private final Function<U, V> mapper;
+    
+    protected ReadOnlyView(List<U> source, Function<U, V> mapper) {
+      super(source);
+      this.mapper = Objects.requireNonNull(mapper, "mapper");
+    }
+
+    @Override
+    public V get(int index) {
+      return mapper.apply(source.get(index));
+    }
+    
+  }
+  
+  
+  protected static class IsomorphicView<U, V> extends BaseView<U, V> {
+    
+    private final Isomorphism<U, V> iso;
+    
+    protected IsomorphicView(List<U> source, Isomorphism<U, V> iso) {
+      super(source);
+      this.iso = Objects.requireNonNull(iso, "iso");
+    }
+    
+    
+
+    @Override
+    public boolean add(V e) {
+      return source.add(iso.inverse().apply(e));
+    }
+
+
+
+    @Override
+    public V get(int index) {
+      return iso.mapping().apply(source.get(index));
+    }
+    
+  }
+  
   
 
 }
