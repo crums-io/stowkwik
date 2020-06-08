@@ -4,6 +4,7 @@
 package com.gnahraf.util;
 
 import java.io.File;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -44,11 +45,38 @@ public class Isomorphism<U, V> {
   
   
   
+  public final static Isomorphism<ByteBuffer, Integer> BUFFER_TO_INT =
+      declare(
+          buffer -> buffer.getInt(buffer.position()),
+          i -> ByteBuffer.allocate(4).putInt(i).flip(),
+          ByteBuffer.class,
+          Integer.class
+          );
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   public static <U, V> Isomorphism<U, V> declare(
       Function<U, V> mapping, Function<V, U> inverse, Class<U> sourceType, Class<V> targetType) {
     
     return new Isomorphism<>(mapping, inverse, sourceType, targetType);
   }
+  
+  
+  
+  
+  
+  
   
   
   private final Function<U, V> mapping;
