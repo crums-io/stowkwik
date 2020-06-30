@@ -40,7 +40,19 @@ public class Lists {
   }
   
   
-  protected static class ArrayView<T> extends AbstractList<T> implements RandomAccess {
+  
+  
+  
+  /**
+   * Extend <em>this</em> class instead of {@linkplain AbstractList}. (Really, a list that's not random access is
+   * not a list should just be called a collection.)
+   */
+  public static abstract class RandomAccessList<T> extends AbstractList<T> implements RandomAccess {
+    
+  }
+  
+  
+  protected static class ArrayView<T> extends RandomAccessList<T> {
     
     private final T[] array;
     
@@ -61,7 +73,7 @@ public class Lists {
   
 
   
-  static abstract class BaseView<U,V> extends AbstractList<V> implements RandomAccess {
+  static abstract class BaseView<U,V> extends RandomAccessList<V> {
     
     protected final List<U> source;
     
