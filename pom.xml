@@ -162,6 +162,13 @@
       <scope>test</scope>
     </dependency>
     
+    <dependency>
+      <groupId>com.gnahraf</groupId>
+      <artifactId>junit-io</artifactId>
+      <version>0.0.1</version>
+      <scope>test</scope>
+    </dependency>
+    
   </dependencies>
   
 </project>
