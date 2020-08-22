@@ -167,7 +167,9 @@ public class HexPath {
       
     }
     
-    if (hdir.list().length >= maxFilesPerDir && hex.length() > 2) {
+    // if hdir has many files we suggest a subdirectory;
+    // also, if we're at the root directory, we suggest a subdirectory anyway
+    if ((hdir == root || hdir.list().length >= maxFilesPerDir) && hex.length() > 2) {
       hdir = new File(hdir, hex.substring(0, 2));
       hex = hex.substring(2);
       

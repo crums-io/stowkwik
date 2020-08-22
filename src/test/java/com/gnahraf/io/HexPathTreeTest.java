@@ -45,7 +45,7 @@ public class HexPathTreeTest extends IoTestCase {
     final String hex = "0c10f";
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
     final File file = hexPath.suggest(hex, true);
-    assertEquals(dir, file.getParentFile());
+    assertEquals(hex.substring(0, 2), file.getParentFile().getName());
     assertTrue(file.createNewFile());
     assertEquals(file, hexPath.find(hex));
     
@@ -426,7 +426,7 @@ public class HexPathTreeTest extends IoTestCase {
     final int[] index = {0};  // as a pointer to int
     while(cursor.tryAdvance(e -> {
       assertEquals(hexes[index[0]++], e.hex);
-      assertEquals(dir, e.file.getParentFile());
+      assertEquals(dir, e.file.getParentFile().getParentFile());
     }));
     assertEquals(hexes.length, index[0]);
   }
@@ -451,7 +451,7 @@ public class HexPathTreeTest extends IoTestCase {
     }
     // create an "0c" subdir
     File subdir0c = new File(dir, "0c");
-    assertTrue(subdir0c.mkdir());
+    assertTrue(subdir0c.isDirectory());
     // push next entry at depth 1
     {
       File file = hexPath.suggest(hexes[1], false);
@@ -489,7 +489,7 @@ public class HexPathTreeTest extends IoTestCase {
     }
     // create an "0c" subdir
     File subdir0c = new File(dir, "0c");
-    assertTrue(subdir0c.mkdir());
+    assertTrue(subdir0c.isDirectory());
     // push next entry at depth 1
     {
       File file = hexPath.suggest(hexes[1], false);

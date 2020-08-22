@@ -3,10 +3,10 @@
  */
 package com.gnahraf.stowkwik;
 
+
 import java.io.File;
 import java.io.IOException;
 
-import com.gnahraf.io.ClosingStack;
 import com.gnahraf.io.DirectoryWatcher;
 import com.gnahraf.stowkwik.log.WriteLog;
 import com.gnahraf.stowkwik.log.WriteLoggedObjectManager;
