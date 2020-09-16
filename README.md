@@ -50,7 +50,7 @@ In that case, overlaying saves directory structure overhead.
 
 ## Build
 
-Build dependencies are automatically managed by maven. However, there's a `com.gnahraf` dependency which for now you first
+Build dependencies are automatically managed by maven. However, there's a `io.crums` dependency which for now you first
 have to build yourself. (Sorry.)
 
 * Hop over to [io-util project](https://github.com/gnahraf/io-util) and clone it.
