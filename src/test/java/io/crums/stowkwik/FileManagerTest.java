@@ -3,6 +3,7 @@
  */
 package io.crums.stowkwik;
 
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,8 +13,6 @@ import java.nio.channels.FileChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.crums.io.Channels;
-import io.crums.stowkwik.FileManager;
-import io.crums.stowkwik.ObjectManager;
 
 /**
  * Move-on-write test.

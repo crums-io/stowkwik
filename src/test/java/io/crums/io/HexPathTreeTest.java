@@ -17,7 +17,6 @@ import java.util.Spliterator;
 
 import org.junit.Test;
 
-import io.crums.io.HexPathTree;
 import com.gnahraf.test.IoTestCase;
 
 /**

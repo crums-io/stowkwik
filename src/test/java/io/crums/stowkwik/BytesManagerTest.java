@@ -7,9 +7,6 @@ package io.crums.stowkwik;
 import java.io.File;
 import java.nio.ByteBuffer;
 
-import io.crums.stowkwik.BytesManager;
-import io.crums.stowkwik.ObjectManager;
-
 /**
  * <tt>BytesManager</tt> test. Also, a test <tt>ObjectManager.map</tt> method.
  */

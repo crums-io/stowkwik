@@ -6,8 +6,6 @@ package io.crums.stowkwik;
 
 import java.io.File;
 
-import io.crums.stowkwik.BinaryObjectManager;
-
 /**
  * 
  */

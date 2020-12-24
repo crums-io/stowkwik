@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import io.crums.io.DirectoryWatcher;
 import com.gnahraf.test.IoTestCase;
 
 /**
@@ -207,24 +206,10 @@ public class DirectoryWatcherTest extends IoTestCase {
   }
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  private void sleep(int millis) {
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException ix) {    }
-  }
-
 }
+
+
+
+
+
+

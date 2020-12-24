@@ -147,8 +147,16 @@ public class HexPathTest extends IoTestCase {
     assertEquals("00", file.getParentFile().getName());
     assertTrue(file.createNewFile());
 
+    // 12/24/20: Commenting out in a compiler-warnings-sweep.
     
-    final File firstFile = file;
+    // Half-ass justification:
+    //
+    // The point of the exercise, if I remember right, is to test the semantics
+    // of a filepath with an odd number of hex digits (which is practically a
+    // bit meaningless, since if we use those digits to represent bytes, there
+    // will always be an even number of them.)
+    
+//    final File firstFile = file;
     
     for (int i = 0; i < 255; ++i) {
       file = hexPath.suggest("000" + HEXSPACE.get(i), false);
@@ -168,7 +176,7 @@ public class HexPathTest extends IoTestCase {
     
     assertEquals(file, hexPath.find("000ff"));
     
-    final File first00 = file;
+//    final File first00 = file;
     
     file = hexPath.suggest("00101", true);
     
@@ -181,13 +189,13 @@ public class HexPathTest extends IoTestCase {
     final String outOfSeq = "00200";
     
     // fill the subdirectory
-    File subdir = file.getParentFile();
+//    File subdir = file.getParentFile();
 
     file = hexPath.suggest(outOfSeq, true);
     assertTrue(file.createNewFile());
     assertEquals(file, hexPath.find(outOfSeq));
     
-    final File oosFile = file;
+//    final File oosFile = file;
     
     
     // FIXME: on a deadline, I can't attent to this right now
