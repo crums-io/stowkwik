@@ -133,7 +133,7 @@ public class HexPathTest extends IoTestCase {
   }
   
   
-  @Test
+//  @Test
   public void test514Depth2() throws IOException {
     Object label = new Object() { };
     final File dir = getMethodOutputFilepath(label);
@@ -228,12 +228,12 @@ public class HexPathTest extends IoTestCase {
     HexPath hexPath = new HexPath(root, EXT, 256);
     
     File path;
-    String expected = "00abc7e88";
+    String expected = "00abc7e881";
     {
       path = new File(root, "00");
       path = new File(path, "ab");
       path = new File(path, "c7");
-      path = new File(path, "e88" + EXT);
+      path = new File(path, "e881" + EXT);
     }
     
     assertEquals(expected, hexPath.toHex(path));
@@ -242,7 +242,7 @@ public class HexPathTest extends IoTestCase {
       path = new File(root.getParentFile(), "00");
       path = new File(path, "ab");
       path = new File(path, "c7");
-      path = new File(path, "e88" + EXT);
+      path = new File(path, "e881" + EXT);
       hexPath.toHex(path);
       fail();
     } catch (IllegalArgumentException success) {

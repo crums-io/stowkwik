@@ -42,7 +42,7 @@ public class HexPathTreeTest extends IoTestCase {
     final File dir = getMethodOutputFilepath(label);
     
     // set up
-    final String hex = "0c10f";
+    final String hex = "0c10f5";
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
     final File file = hexPath.suggest(hex, true);
     assertEquals(hex.substring(0, 2), file.getParentFile().getName());
@@ -89,7 +89,7 @@ public class HexPathTreeTest extends IoTestCase {
     final File dir = getMethodOutputFilepath(label);
     
     // set up
-    final String hex = "0c10f";
+    final String hex = "0c10f5";
     final File subdir0c = new File(dir, "0c");
     assertTrue(subdir0c.mkdirs());
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
@@ -139,7 +139,7 @@ public class HexPathTreeTest extends IoTestCase {
     final File dir = getMethodOutputFilepath(label);
     
     // set up
-    final String hex = "0c10f";
+    final String hex = "0c10f4";
     final File subdir0c = new File(dir, "0c");
     assertTrue(subdir0c.mkdirs());
     assertTrue(new File(dir, "00").mkdir());
@@ -191,7 +191,7 @@ public class HexPathTreeTest extends IoTestCase {
     final File dir = getMethodOutputFilepath(label);
     
     // set up
-    final String hex = "0c10f";
+    final String hex = "0c10f3";
     final File subdir0c = new File(dir, "0c");
     assertTrue(subdir0c.mkdirs());
     assertTrue(new File(dir, "00").mkdir());
@@ -244,7 +244,7 @@ public class HexPathTreeTest extends IoTestCase {
     final File dir = getMethodOutputFilepath(label);
     
     // set up
-    final String hex = "0c10f";
+    final String hex = "0c10f4";
     final File subdir0c = new File(dir, "0c");
     assertTrue(subdir0c.mkdirs());
     
@@ -298,7 +298,7 @@ public class HexPathTreeTest extends IoTestCase {
     final File dir = getMethodOutputFilepath(label);
     
     // set up
-    final String hex = "0c10f";
+    final String hex = "0c10f2";
     final File subdir0c = new File(dir, "0c");
     assertTrue(subdir0c.mkdirs());
     assertTrue(new File(dir, "10").mkdir());
@@ -353,7 +353,7 @@ public class HexPathTreeTest extends IoTestCase {
     final File dir = getMethodOutputFilepath(label);
     
     // set up
-    final String hex = "0c10f";
+    final String hex = "0c10f1";
     final File subdir0c = new File(dir, "0c");
     assertTrue(subdir0c.mkdirs());
     assertTrue(new File(new File(dir, "10"), "b9").mkdirs());
@@ -410,7 +410,7 @@ public class HexPathTreeTest extends IoTestCase {
     final File dir = getMethodOutputFilepath(label);
     
     // set up
-    final String[] hexes = { "0c10e", "0c10f" } ;
+    final String[] hexes = { "0c10e0", "0c10ff" } ;
     
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
     for (String hex : hexes) {
@@ -441,7 +441,7 @@ public class HexPathTreeTest extends IoTestCase {
     
     // set up
     
-    final String[] hexes = { "0c100", "0c10f" } ;
+    final String[] hexes = { "0c1000", "0c10ff" } ;
     
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
     // create first entry at depth 0
@@ -479,7 +479,7 @@ public class HexPathTreeTest extends IoTestCase {
     
     // set up
     
-    final String[] hexes = { "0c10e", "0c90f" } ;
+    final String[] hexes = { "0c10e0", "0c90f0" } ;
     
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
     // create first entry at depth 0
@@ -521,7 +521,7 @@ public class HexPathTreeTest extends IoTestCase {
     
     // set up
     
-    final String[] hexes = { "0c10e", "0f90f" } ;
+    final String[] hexes = { "0c10e0", "0f90f0" } ;
     
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
     // create first entry at depth 0
@@ -563,7 +563,7 @@ public class HexPathTreeTest extends IoTestCase {
     
     // set up
     
-    final String[] hexes = { "0c10e", "0f90f" } ;
+    final String[] hexes = { "0c10e1", "0f90f1" } ;
     
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
     // create first entry at depth 0
@@ -635,7 +635,7 @@ public class HexPathTreeTest extends IoTestCase {
 
     HexPathTree hexPath = new HexPathTree(dir, EXT, 256);
 
-    final String[] hexes = { "058a9", "0c10e", "0f90f" } ;
+    final String[] hexes = { "058a9a", "0c10ea", "0f90fa" } ;
     
     for (String hex : hexes) {
       assertTrue(new File(dir, hex.substring(0, 2)).mkdir());
