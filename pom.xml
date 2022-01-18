@@ -2,18 +2,19 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.crums</groupId>
   <artifactId>stowkwik</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
   
   
   
 
-  <name>stowkwik</name>
+  <name>Stowkwik</name>
   <url>https://github.com/gnahraf/stowkwik</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.11</maven.compiler.source>
     <maven.compiler.target>1.11</maven.compiler.target>
+    <crums.util>1.0.0-SNAPSHOT</crums.util>
   </properties>
   
   
@@ -125,23 +126,23 @@
   
   <dependencies>
 	
-	<dependency>
-	  <groupId>io.crums</groupId>
-	  <artifactId>io-util</artifactId>
-	  <version>[0.0.7,)</version>
-	</dependency>
+		<dependency>
+		  <groupId>io.crums</groupId>
+		  <artifactId>io-xp</artifactId>
+		  <version>${crums.util}</version>
+		</dependency>
 	
-	<dependency>
-	  <groupId>javax.xml.bind</groupId>
-	  <artifactId>jaxb-api</artifactId>
-	  <version>2.3.0</version>
-	</dependency>
+		<dependency>
+		  <groupId>javax.xml.bind</groupId>
+		  <artifactId>jaxb-api</artifactId>
+		  <version>2.3.0</version>
+		</dependency>
 	
-	<dependency>
-	  <groupId>com.sun.xml.bind</groupId>
-	  <artifactId>jaxb-impl</artifactId>
-	  <version>2.4.0-b180830.0438</version>
-	</dependency>
+		<dependency>
+		  <groupId>com.sun.xml.bind</groupId>
+		  <artifactId>jaxb-impl</artifactId>
+		  <version>2.4.0-b180830.0438</version>
+		</dependency>
 	
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
@@ -149,7 +150,7 @@
       <version>2.3.0</version>
      </dependency>
 	
-	<dependency>
+	  <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
       <version>1.1.1</version>
