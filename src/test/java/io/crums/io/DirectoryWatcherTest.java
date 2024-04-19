@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.gnahraf.test.IoTestCase;
+import io.crums.testing.IoTestCase;
 
 /**
  * 

@@ -1,12 +1,11 @@
 /*
- * Copyright 2019 Babak Farhang
+ * Copyright 2019-2024 Babak Farhang
  */
 package io.crums.stowkwik;
 
+
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-
-import io.crums.stowkwik.Codec;
 
 
 class MockCodec extends MockEncoder implements Codec<Mock> {

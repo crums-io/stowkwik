@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.crums</groupId>
   <artifactId>stowkwik</artifactId>
-  <version>0.0.7</version>
+  <version>0.0.8-SNAPSHOT</version>
   
   
   
@@ -13,7 +13,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
-    <crums.util>1.0.0</crums.util>
+    <crums.util>1.0.4-SNAPSHOT</crums.util>
   </properties>
   
   
@@ -112,9 +112,9 @@
     </dependency>
     
     <dependency>
-      <groupId>com.gnahraf</groupId>
-      <artifactId>junit-io</artifactId>
-      <version>0.0.1</version>
+      <groupId>io.crums</groupId>
+      <artifactId>unit-io</artifactId>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
     

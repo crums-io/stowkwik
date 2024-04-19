@@ -15,7 +15,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.gnahraf.test.IoTestCase;
+import io.crums.testing.IoTestCase;
 
 /**
  * Note we expect randomized inputs to HexPath. The inputs here are highly contrived.

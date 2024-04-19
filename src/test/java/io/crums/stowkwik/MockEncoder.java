@@ -6,8 +6,6 @@ package io.crums.stowkwik;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
-import io.crums.stowkwik.Encoder;
-
 class MockEncoder implements Encoder<Mock> {
 
   @Override

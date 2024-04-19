@@ -12,8 +12,7 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
-import io.crums.stowkwik.ObjectManager;
-import com.gnahraf.test.IoTestCase;
+import io.crums.testing.IoTestCase;
 
 
 /**
