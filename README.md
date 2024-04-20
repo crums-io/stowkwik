@@ -40,7 +40,7 @@ Suppose the MD5 signature of an object in the store is `078940eef616da36acd0d8c8
 
 On insertion, the deepest possible existing path is preferred; if the deepest existing directory has more files (with the given
 extension) than a preset threshold (default 256, the minimum), then a new subdirectory is created and the file is stored in
-that subdirectory. (See [`HexPath`](https://github.com/gnahraf/stowkwik/blob/master/src/main/java/com/gnahraf/io/HexPath.java)
+that subdirectory. (See [`HexPath`](https://github.com/crums-io/stowkwik/blob/master/src/main/java/io/crums/stowkwik/io/HexPath.java)
 for implementation details.)
 
 You can overlay multiple stores on top of the same directory structure (as long as their extensions differ). This is not
@@ -76,13 +76,14 @@ over code. I comment more than most tho, so generating this might help. Incant t
 
 ## How to Use
 
-This [API](https://github.com/crums-io/stowkwik/tree/master/src/main/java/io/crums/stowkwik) calls an object store an `ObjectManager`. Right now there are 3 types of these:
+This [API](https://github.com/crums-io/stowkwik/tree/master/src/main/java/io/crums/stowkwik)
+calls an object store an `ObjectManager`. Right now there are 3 types of these:
 
 * `FileManager`
 * `BytesManager`
 * `BinaryObjectManager`
 
-All these are views on a managed [`HexPath`](https://github.com/crums-io/stowkwik/blob/master/src/main/java/com/gnahraf/io/HexPath.java)
+All these are views on a managed [`HexPath`](https://github.com/crums-io/stowkwik/blob/master/src/main/java/io/crums/stowkwik/io/HexPath.java)
 directory structure.
 
 `FileManager` is the simplest and requires virtually no setup. It uses a file's raw contents to compute its hash. It supports 2
