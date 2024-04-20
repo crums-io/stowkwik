@@ -140,13 +140,14 @@ public class HexPath {
    * Suggests a path for the given hexadecimal string based on how populated the directory
    * structure is. The decision whether to suggest a deeper directory than one that already
    * exists is also governed by the {@linkplain #getMaxFilesPerDir() maxFilesPerDir} property.
-   * <p/>
+   * <p>
    * Note the return value is not influenced by whether a file with the given hex already exists.
+   * </p>
    * 
    * @param hex  the hexidecimal value the file will be known as
-   * @param makeParentDir if <tt>true</tt>, when a new deeper path is suggested, the parent directory
+   * @param makeParentDir if {@code true}, when a new deeper path is suggested, the parent directory
    *                      is created on return
-   * @return a file path to given <tt>hex</tt> (which may or may not exist)
+   * @return a file path to given {@code hex} (which may or may not exist)
    */
   public File suggest(String hex, boolean makeParentDir) {
     hex = canonicalizeHex(hex);

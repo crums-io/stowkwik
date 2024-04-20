@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
 public interface Codec<T> extends Encoder<T> {
   
   /**
-   * Reads and returns an object marshalled from the given <tt>src</tt> buffer.
+   * Reads and returns an object marshalled from the given {@code src} buffer.
    * On return the position of the buffer is advanced.
    *
    * @param src

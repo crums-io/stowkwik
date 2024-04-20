@@ -25,7 +25,7 @@ import io.crums.util.IntegralStrings;
 import io.crums.util.Lists;
 
 /**
- * A more capable <tt>HexPath</tt>. This builds on the base class (which was factored out
+ * A more capable {@code HexPath}. This builds on the base class (which was factored out
  * in order to lessen programmer cognitive load).
  */
 public class HexPathTree extends HexPath {
@@ -107,8 +107,8 @@ public class HexPathTree extends HexPath {
   
   
   /**
-   * A <tt>file</tt> and its <tt>hex</tt> identifier. Equality, hash code, and
-   * comparison semantics are solely governed by <tt>hex</tt>. 
+   * A {@code file} and its {@code hex} identifier. Equality, hash code, and
+   * comparison semantics are solely governed by {@code hex}. 
    */
   public static class Entry implements Comparable<Entry> {
     
@@ -249,7 +249,7 @@ public class HexPathTree extends HexPath {
     
     
     /**
-     * Consumes all entries up to but not including the specified <tt>prefix</tt>. That is, on return
+     * Consumes all entries up to but not including the specified {@code prefix}. That is, on return
      * the cursor is positioned at the first entry whose hex value is greater than or equal to
      * the argument.
      * 
@@ -320,9 +320,9 @@ public class HexPathTree extends HexPath {
 
 
     /**
-     * Returns <tt>null</tt>, per the <tt>Spliterator</tt> contract for the
-     * {@linkplain Spliterator#SORTED} characterstic. (<tt>null</tt> just means
-     * that this <tt>Spliterator</tt>'s type implements <tt>Comparable</tt>.)
+     * Returns {@code null}, per the {@code Spliterator} contract for the
+     * {@linkplain Spliterator#SORTED} characterstic. ({@code null} just means
+     * that this {@code Spliterator}'s type implements {@code Comparable}.)
      */
     @Override
     public Comparator<? super Entry> getComparator() {
@@ -386,7 +386,7 @@ public class HexPathTree extends HexPath {
 
 
     /**
-     * Returns <tt>ORDERED | SORTED | IMMUTABLE | NONNULL</tt> plus <tt>DISTINCT</tt> if the
+     * Returns {@code ORDERED | SORTED | IMMUTABLE | NONNULL} plus {@code DISTINCT} if the
      * distinct <em>view</em> flag is on.
      */
     @Override
@@ -445,7 +445,7 @@ public class HexPathTree extends HexPath {
 
   
   /**
-   * Ranks <tt>HexDirectoryPosition</tt>s by their first remaining entry (file) and then by
+   * Ranks {@code HexDirectoryPosition}s by their first remaining entry (file) and then by
    * their depth (with deeper ones coming first).
    */
   final static Comparator<HexDirectoryPosition> DIRPOS_ENTRY_RANK = new Comparator<>() {

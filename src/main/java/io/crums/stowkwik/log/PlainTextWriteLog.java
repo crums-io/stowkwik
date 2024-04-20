@@ -12,14 +12,14 @@ import java.time.Instant;
 
 /**
  * Logs writes in plain text. Example output:
- * <tt><pre>
+ * <pre>
  *    .
  *    .
  *  2019-11-15T23:04:04 86d3f3a95c324c9479bd8986968f4327
  *  2019-11-15T23:04:04 067b4e4fdb16fd58aa8a009b9fc0aad2
  *    .
  *    .
- * </pre></tt>
+ * </pre>
  * 
  * @see PlainTextWriteLogReader
  */

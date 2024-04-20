@@ -65,7 +65,7 @@ public class FilenameScheme {
   
   /**
    * Determines whether the {@linkplain FilenameScheme#toIdentifer(String) identifier}
-   * in the given <tt>filename</tt> is a lowercase hexadecimal string.
+   * in the given {@code filename} is a lowercase hexadecimal string.
    */
   public boolean isHexFilename(String filename) {
     return acceptForm(filename) && isLowercaseHex(toIdentifierUnchecked(filename));
@@ -83,7 +83,7 @@ public class FilenameScheme {
   
   
   /**
-   * Determines whether the given <tt>filename</tt> conforms to this naming scheme.
+   * Determines whether the given {@code filename} conforms to this naming scheme.
    * 
    * @see #getFilenameFilter()
    */

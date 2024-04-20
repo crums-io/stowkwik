@@ -16,13 +16,12 @@ import io.crums.util.cc.ThreadUtils;
 /**
  * A {@linkplain FileManager} with declarable watch directories (called "stow" directories)
  * from which files can be input. Lo key cross process input mechanism.
- * <p/>
  */
 public class FileStower implements AutoCloseable {
   
   /**
-   * Name of the default stow directory. It's a subdirectory
-   * of an instance's {@linkplain #getRootDir() root}.
+   * Name of the default stow directory. This is
+   * relative to the {@code FileManager}'s root directory.
    */
   public final static String DEFAULT_STOW_DIR = "stow";
 
@@ -34,18 +33,10 @@ public class FileStower implements AutoCloseable {
   
   
 
-  /**
-   * @param dir
-   * @param ext
-   */
   public FileStower(File dir, String ext) {
     this(dir, ext, FileManager.DEFAULT_HASH_ALGO);
   }
 
-  /**
-   * @param dir
-   * @param ext
-   */
   public FileStower(File dir, String ext, String hashAlgo) {
     this.fileManager= new FileManager(dir, ext, hashAlgo, true);
     WriteLog wlog = WriteLogs.newPlainTextWriteLog(fileManager);

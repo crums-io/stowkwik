@@ -52,8 +52,8 @@ public class FileManager extends BaseHashedObjectManager<File> {
    *                    directory
    * @param hashAlgo    the name of the cryptographic hashing algorithm
    *                    (suitable for {@linkplain MessageDigest#getInstance(String)}).
-   *                    E.g. <tt>MD5</tt>, <tt>SHA-1</tt>, <tt>SHA-256</tt>, ..
-   * @param moveOnWrite if <tt>true</tt> then input files are <em>moved</em> on writes;
+   *                    E.g. {@code MD5}, {@code SHA-1}, {@code SHA-256}, ..
+   * @param moveOnWrite if {@code true} then input files are <em>moved</em> on writes;
    *                    o.w. input files are <em>copied</em> on writes.
    * 
    * @see BaseHashedObjectManager#DEFAULT_HASH_ALGO

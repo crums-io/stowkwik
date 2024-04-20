@@ -26,7 +26,7 @@ import io.crums.util.IntegralStrings;
  * Base implementation for a file-per-object storage manager. The ID of each object is
  * determined by a cryptographic hash (MD5 usually suffices) of its contents.
  *
- * @param T the type of object managed.
+ * @param <T> the type of object managed.
  */
 public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
   
@@ -47,7 +47,7 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
    * @param hashAlgo
    *            the name of the cryptographic hashing algorithm
    *            (suitable for {@linkplain MessageDigest#getInstance(String)})
-   *            E.g. <tt>MD5</tt>, <tt>SHA-1</tt>, <tt>SHA-256</tt>, ..
+   *            E.g. {@code MD5}, {@code SHA-1}, {@code SHA-256}, ..
    * 
    * @see BaseHashedObjectManager#DEFAULT_HASH_ALGO
    */
@@ -228,9 +228,9 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
   protected abstract ByteBuffer toByteBuffer(T object);
   
   /**
-   * Validates the contents of the given existing <tt>file</tt> against the <tt>object</tt>
-   * it's supposed to represent. The given <tt>buffer</tt> is an alternate representation
-   * of the same object. Depending on implementations details (e.g. is <tt>object</tt>/<tt>buffer</tt>
+   * Validates the contents of the given existing {@code file} against the {@code object}
+   * it's supposed to represent. The given {@code buffer} is an alternate representation
+   * of the same object. Depending on implementations details (e.g. is {@code object}/{@code buffer}
    * relationship 1:1) one or the other may be used.
    */
   protected abstract void validateFile(File file, T object, ByteBuffer buffer) throws CorruptionException;
@@ -251,8 +251,8 @@ public abstract class BaseHashedObjectManager<T> extends ObjectManager<T> {
   }
   
   /**
-   * Computes and returns the signature of the given <tt>buffer</tt>.
-   * Excepting its mark, the state of the <tt>buffer</tt> is not modified.
+   * Computes and returns the signature of the given {@code buffer}.
+   * Excepting its mark, the state of the {@code buffer} is not modified.
    */
   protected String signature(ByteBuffer buffer) {
     MessageDigest digest = threadLocalDigest();

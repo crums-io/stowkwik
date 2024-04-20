@@ -10,22 +10,22 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Base abstraction for a simple object store. It doesn't yet have a <tt>remove()</tt> method.
+ * Base abstraction for a simple object store. It doesn't yet have a {@code remove()} method.
  * 
- * @param T the type of data this instance manages. At minimum, this
- *          requires that {@linkplain Object#equals(Object) Object.equals}
- *          be properly overriden with a value-based implementation
- *          (the base implementation is pointer-based). You might want to also override
- *          {@linkplain Object#hashCode() Object.hashCode} (consistent with <tt>equals()</tt>)
- *          but it's not required here for the proper functioning of an implementation.
+ * @param <T> the type of data this instance manages. At minimum, this
+ *            requires that {@linkplain Object#equals(Object) Object.equals}
+ *            be properly overriden with a value-based implementation
+ *            (the base implementation is pointer-based). You might want to also override
+ *            {@linkplain Object#hashCode() Object.hashCode} (consistent with {@code equals()})
+ *            but it's not required here for the proper functioning of an implementation.
  */
 public abstract class ObjectManager<T> {
 
 
   /**
-   * Writes the given <tt>object</tt> and returns its ID. This is an idempotent
+   * Writes the given {@code object} and returns its ID. This is an idempotent
    * operation: if there's already another object in the store that equals the
-   * given <tt>object</tt>, then the existing object's ID is returned.
+   * given {@code object}, then the existing object's ID is returned.
    * 
    * @throws UncheckedIOException in the event of an I/O error
    */
@@ -34,7 +34,7 @@ public abstract class ObjectManager<T> {
   
   
   /**
-   * Computes and returns the ID of the given <tt>object</tt>. The object
+   * Computes and returns the ID of the given {@code object}. The object
    * does not have to exist in the store. You can use this to determine what
    * the return value of {@linkplain #write(Object)} will be.
    */
@@ -49,7 +49,7 @@ public abstract class ObjectManager<T> {
    * 
    * @param id  the object's ID as returned on write
    * 
-   * @throws NotFoundException  if no known (stored) object with the given <tt>id</tt> exists
+   * @throws NotFoundException  if no known (stored) object with the given {@code id} exists
    * @throws UncheckedIOException in the event of an I/O error
    */
   public abstract T read(String id) throws NotFoundException, UncheckedIOException;
@@ -73,18 +73,19 @@ public abstract class ObjectManager<T> {
   
   /**
    * Returns a stream of object IDs in lexicographc order starting with or greater than
-   * <tt>idPrefix</tt>.
+   * {@code idPrefix}.
    */
   public abstract Stream<String> streamIds(String idPrefix);
   
   
   /**
    * Returns the object whose ID starts with the given prefix.
-   * <p/>
+   * <p>
    * Note: the base class originally provided an implementation but it was inefficient
    * (traversed the whole store) and lest I forget again to override it, it's marked abstract.
    * The expected behavior is as follows..
-   * <tt><pre>
+   * </p>
+   * <pre>{@code
       public T readUsingPrefix(String idPrefix) throws NotFoundException, IllegalArgumentException, UncheckedIOException {
         if (idPrefix == null || idPrefix.isEmpty())
           throw new IllegalArgumentException("empty idPrefix " + idPrefix);
@@ -100,11 +101,11 @@ public abstract class ObjectManager<T> {
         
         return read(id.get(0));
       }
-   * </pre></tt>
+   * }</pre>
    * 
    * @param idPrefix prefix of the object's ID.
    * 
-   * @return the marshalled object, never <tt>null</tt>
+   * @return the marshalled object, never {@code null}
    * 
    * @throws NotFoundException
    *         if no object with ID starting with that prefix could be found
@@ -119,23 +120,23 @@ public abstract class ObjectManager<T> {
   /**
    * Streams objects in the store in order of their IDs. Logically equivalent to
    * this 2-pass implementation.
-   * <tt><pre>
+   * <pre>{@code 
       public Stream<T> streamObjects() {
         return streamIds().map(hash -> read(hash));
       }
-   * </pre></tt>
+   * } </pre>
    */
   public abstract Stream<T> streamObjects();
   
   
   /**
    * Returns objects in the store in order of their IDs starting with or greater than
-   * <tt>idPrefix</tt>. Logically equivalent to this 2-pass implementation.
-   * <tt><pre>
+   * {@code idPrefix}. Logically equivalent to this 2-pass implementation.
+   * <pre>{@code
       public Stream<T> streamObjects(String idPrefix) {
         return streamIds(idPrefix).map(hash -> read(hash));
       }
-   * </pre></tt>
+   * }</pre>
    */
   public abstract Stream<T> streamObjects(String idPrefix);
   
@@ -153,17 +154,17 @@ public abstract class ObjectManager<T> {
   
   
   /**
-   * Maps an instance of type <tt>U</tt> to an instance of type <tt>V</tt>.
-   * This is a workaround for working with a mutable type (<tt>U</tt>) at the persistence
+   * Maps an instance of type {@code U} to an instance of type {@code V}.
+   * This is a workaround for working with a mutable type ({@code U}) at the persistence
    * layer (typically because its easier) when we'd prefer to be working with an
-   * immutable exposed type (<tt>V</tt>).
+   * immutable exposed type ({@code V}).
    * 
    * @param manager     the base manager
-   * @param readMapper  the <tt>{@literal U -> V}</tt> converter
-   * @param writeMapper the <tt>{@literal V -> U}</tt> converter
+   * @param readMapper  the {@code U -> V} converter
+   * @param writeMapper the {@code V -> U} converter
    * 
-   * @param U           the type under the hood (at the persistence layer)
-   * @param V           the exposed type (for sanity, do override <tt>Object.equals</tt>
+   * @param <U>         the type under the hood (at the persistence layer)
+   * @param <V>         the exposed type (for sanity, do override {@code Object.equals}
    *                    for this type, also)
    */
   public static <U, V> ObjectManager<V> map(

@@ -28,7 +28,7 @@ public class WriteLogs {
   
   
   /**
-   * Returns a path to the log file for the for the given root <tt>dir</tt> and extension <tt>ext</tt>.
+   * Returns a path to the log file for the for the given root {@code dir} and extension {@code ext}.
    * On return the log subdirectory is guaranteed to exist; the log file itself is not created, so it
    * may or may not exist.
    * 

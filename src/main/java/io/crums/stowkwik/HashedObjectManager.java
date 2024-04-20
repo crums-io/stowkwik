@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  * A file-per-object storage manager. The ID of each object is
  * determined by a cryptographic hash (MD5 suffices) of its contents.
  *
- * @param T the type of object managed.
+ * @param <T> the type of object managed.
  */
 public abstract class HashedObjectManager<T> extends BaseHashedObjectManager<T> {
   

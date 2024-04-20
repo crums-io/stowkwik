@@ -28,8 +28,8 @@ public enum PrefixOrder {
   
   
   /**
-   * Returns the position of the given <tt>string</tt> relative
-   * to the specified <tt>prefix</tt>. Note this property is not reflexive.
+   * Returns the position of the given {@code string} relative
+   * to the specified {@code prefix}. Note this property is not reflexive.
    */
   public static PrefixOrder compareToPrefix(String string, String prefix) {
 

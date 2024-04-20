@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 public interface Encoder<T> {
   
   /**
-   * Encodes the state of the given <tt>item</tt> in the specified destination buffer <tt>dtn</tt>.
+   * Encodes the state of the given {@code item} in the specified destination buffer {@code dtn}.
    */
   void write(T item, ByteBuffer dtn) throws BufferOverflowException;
   
@@ -32,7 +32,7 @@ public interface Encoder<T> {
    * Determines whether items are written in a self-delimited way. This condition is
    * typically satisfied.
    * 
-   * @return <tt>true</tt>
+   * @return {@code true}
    */
   default boolean isSelfDelimiting() {
     return true;
