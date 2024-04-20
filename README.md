@@ -2,11 +2,18 @@
 
 Quick and dirty file-per-object store in Java. It's not terribly fast, but it does scale.
 
-## Maven Coordinates
+## Maven/Module Coordinates
+
+Maven:
 
     <groupId>io.crums</groupId>
     <artifactId>stowkwik</artifactId>
     <version>1.0.0</version>
+
+Java module:
+
+    io.crums.stowkwik
+
 
 ## Motivation
 
