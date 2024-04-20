@@ -50,12 +50,11 @@ In that case, overlaying saves directory structure overhead.
 
 ## Build
 
-Build dependencies are automatically managed by maven. However, there's a `io.crums` dependency which for now you first
-have to build yourself. (Sorry.)
+Builds are managed by maven.
 
-* Hop over to [io-util project](https://github.com/gnahraf/io-util) and clone it.
-* Switch to the `io-util` directory and invoke `$ mvn clean install -DskipTests=true`
-* Return to this project's directory and invoke `$ mvn clean package appassembler:assemble`
+* `$ mvn clean install` - builds, tests, and install's the library in the local .m2 repo.
+* `$ mvn clean package appassembler:assemble` - builds 2 somewhat crude CLI tools. (See next.)
+
 
 ### Suggested "Installation"
 
@@ -67,10 +66,6 @@ apps built by maven is to include `$HOME/bin` on my `PATH` and then
 
 which will copy the `bin` and `repo` directories to your home directory.
 
-To use this library with other maven projects do the same you did with `io-utils`..
-
-> `$ mvn clean install`
-
 ### Javadoc
 
 My main use for annotating code with javadoc comments is for the context bubbles my IDE pops on hovering the mouse
@@ -78,22 +73,16 @@ over code. I comment more than most tho, so generating this might help. Incant t
 
 > `$ mvn javadoc:javadoc`
 
-If your `JAVA_HOME` environment variable is not set you'll need to set it for this to work. On MacOS, you do this with
-
-> `$ export JAVA_HOME="$(/usr/libexec/java_home -v 10.0)"`
-
-which is a pain in the arse. (Note the funky version number--not a typo :/ )
 
 ## How to Use
 
-This [API](https://github.com/gnahraf/stowkwik/tree/master/src/main/java/com/gnahraf/stowkwik) calls an object store an `ObjectManager`. Right now there are 4 types of these:
+This [API](https://github.com/crums-io/stowkwik/tree/master/src/main/java/io/crums/stowkwik) calls an object store an `ObjectManager`. Right now there are 3 types of these:
 
 * `FileManager`
 * `BytesManager`
 * `BinaryObjectManager`
-* `XmlObjectManager`
 
-All these are views on a managed [`HexPath`](https://github.com/gnahraf/stowkwik/blob/master/src/main/java/com/gnahraf/io/HexPath.java)
+All these are views on a managed [`HexPath`](https://github.com/crums-io/stowkwik/blob/master/src/main/java/com/gnahraf/io/HexPath.java)
 directory structure.
 
 `FileManager` is the simplest and requires virtually no setup. It uses a file's raw contents to compute its hash. It supports 2
@@ -110,10 +99,6 @@ marshall/unmarshall these to values and objects somehow. Or you might consider t
 are quick to code, but their down side is that the data in the file is no longer human readable. The next (and currently last)
 abstraction is a compromise to readability.
 
-`XmlObjectManager` takes a user defined `Encoder` (a `Codec` that knows how to write, not necessarily read) for a Java Bean (a
-Java class with mutable public members). This creates slightly bloated, but readable files. The `Encoder` is there in case the
-Java XML library outputs differently (order, indentation, whitespace, etc.) in future versions. If you prefer to work with *immutable* types (as this author does), you can then *map* this object manager to one for the immutable type using the static
-`ObjectManager.map(..)` function.
 
 > Usually computing hash state from machine readable byte sequences is straight forward since in most applications
 if two objects' byte sequences are different then their states are different; when state is human readable however, there are
@@ -134,16 +119,6 @@ It also sports a human readable write-log which allows items in the store to be 
 These stow directories, in turn, can be used for language-agnostic, cross-process input.
 
 `stowex` is a command line tool for reading and exploring an existing store. Both tools have a `-help` feature that hopefully makes them self-explanatory.
-
-### Unit Tests
-
-Unit tests are always a good place to see how code works.
-
-The [unit tests](https://github.com/gnahraf/stowkwik/tree/master/src/test/java/com/gnahraf/stowkwik) contain a mock example. See
-
-* `Mock` - the mock object
-* `MockEncoder` - encoder used to write mock objects to memory (also used to compute a mock's hash when written as XML)
-* `MockCodec` - read/write codec used by the `BinaryObjectManager<Mock>`
 
 ## Limits
 
@@ -170,3 +145,4 @@ Nov. 10 2019: Created `stowd` a command line background process that stows files
 
 Nov. 20 2019: Added a random-access list interface to the write-log. Because the write-log is chronologically ordered, you
 can binary search this list.
+
