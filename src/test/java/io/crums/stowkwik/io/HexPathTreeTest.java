@@ -1,11 +1,11 @@
 /*
  * Copyright 2019 Babak Farhang
  */
-package io.crums.io;
+package io.crums.stowkwik.io;
 
 
-import static io.crums.io.HexPathTest.EXT;
-import static io.crums.io.HexPathTest.HEXSPACE;
+import static io.crums.stowkwik.io.HexPathTest.EXT;
+import static io.crums.stowkwik.io.HexPathTest.HEXSPACE;
 import static org.junit.Assert.*;
 
 import java.io.File;

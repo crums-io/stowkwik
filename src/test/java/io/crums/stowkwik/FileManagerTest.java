@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.crums.io.Channels;
+import io.crums.stowkwik.io.Channels;
 
 /**
  * Move-on-write test.

@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 
 import javax.xml.bind.JAXB;
 
-import io.crums.io.CorruptionException;
+import io.crums.stowkwik.io.CorruptionException;
 import io.crums.xcept.NotFoundException;
 
 /**

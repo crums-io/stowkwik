@@ -1,7 +1,7 @@
 /*
  * Copyright 2017 Babak Farhang
  */
-package io.crums.io;
+package io.crums.stowkwik.io;
 
 
 import java.util.ArrayDeque;

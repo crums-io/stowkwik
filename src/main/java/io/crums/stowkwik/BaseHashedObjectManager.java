@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.crums.io.Channels;
-import io.crums.io.CorruptionException;
-import io.crums.io.HexPathTree;
+import io.crums.stowkwik.io.Channels;
+import io.crums.stowkwik.io.CorruptionException;
+import io.crums.stowkwik.io.HexPathTree;
 import io.crums.util.IntegralStrings;
 import io.crums.xcept.NotFoundException;
 

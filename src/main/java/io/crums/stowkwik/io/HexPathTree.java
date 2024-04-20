@@ -1,7 +1,7 @@
 /*
  * Copyright 2019 Babak Farhang
  */
-package io.crums.io;
+package io.crums.stowkwik.io;
 
 
 import static io.crums.util.IntegralStrings.*;
@@ -22,7 +22,6 @@ import java.util.stream.StreamSupport;
 import io.crums.util.EasyList;
 import io.crums.util.IntegralStrings;
 import io.crums.util.Lists;
-import io.crums.util.PrefixOrder;
 import io.crums.xcept.NotFoundException;
 
 /**

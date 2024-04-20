@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 
-import io.crums.io.Channels;
-import io.crums.io.CorruptionException;
+import io.crums.stowkwik.io.Channels;
+import io.crums.stowkwik.io.CorruptionException;
 
 /**
  * A binary encoded object manager.

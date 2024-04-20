@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import io.crums.io.HexPathTree;
-import io.crums.io.HexPathTree.Entry;
+import io.crums.stowkwik.io.HexPathTree;
+import io.crums.stowkwik.io.HexPathTree.Entry;
 import io.crums.stowkwik.log.PlainTextWriteLogReader;
 import io.crums.stowkwik.log.WriteLogs;
 import io.crums.util.IntegralStrings;

@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 
-import io.crums.io.CorruptionException;
+import io.crums.stowkwik.io.CorruptionException;
 
 /**
  * 

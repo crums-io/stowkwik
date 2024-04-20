@@ -1,7 +1,7 @@
 /*
  * Copyright 2019 Babak Farhang
  */
-package io.crums.io;
+package io.crums.stowkwik.io;
 
 
 import static io.crums.util.IntegralStrings.*;

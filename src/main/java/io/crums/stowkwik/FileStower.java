@@ -7,7 +7,7 @@ package io.crums.stowkwik;
 import java.io.File;
 import java.io.IOException;
 
-import io.crums.io.DirectoryWatcher;
+import io.crums.stowkwik.io.DirectoryWatcher;
 import io.crums.stowkwik.log.WriteLog;
 import io.crums.stowkwik.log.WriteLoggedObjectManager;
 import io.crums.stowkwik.log.WriteLogs;
