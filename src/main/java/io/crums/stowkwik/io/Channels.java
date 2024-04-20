@@ -12,7 +12,7 @@ import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import io.crums.xcept.NotFoundException;
+import io.crums.stowkwik.NotFoundException;
 
 
 /**

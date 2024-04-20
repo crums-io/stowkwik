@@ -9,8 +9,6 @@ import java.io.UncheckedIOException;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.crums.xcept.NotFoundException;
-
 /**
  * Base abstraction for a simple object store. It doesn't yet have a <tt>remove()</tt> method.
  * 

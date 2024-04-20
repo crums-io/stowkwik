@@ -21,7 +21,6 @@ import io.crums.stowkwik.io.Channels;
 import io.crums.stowkwik.io.CorruptionException;
 import io.crums.stowkwik.io.HexPathTree;
 import io.crums.util.IntegralStrings;
-import io.crums.xcept.NotFoundException;
 
 /**
  * Base implementation for a file-per-object storage manager. The ID of each object is

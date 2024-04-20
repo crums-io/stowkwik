@@ -8,8 +8,6 @@ import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import io.crums.xcept.NotFoundException;
-
 /**
  * Wrapper for aspect-oriented overrides.
  */

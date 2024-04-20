@@ -19,10 +19,10 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import io.crums.stowkwik.NotFoundException;
 import io.crums.util.EasyList;
 import io.crums.util.IntegralStrings;
 import io.crums.util.Lists;
-import io.crums.xcept.NotFoundException;
 
 /**
  * A more capable <tt>HexPath</tt>. This builds on the base class (which was factored out

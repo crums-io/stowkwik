@@ -18,13 +18,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.sun.nio.file.SensitivityWatchEventModifier;
+//import com.sun.nio.file.SensitivityWatchEventModifier;
 
 import io.crums.util.Isomorphism;
 import io.crums.util.Sets;
 
 /**
- * 
+ * This class has been stubbed out while a proper fix is found,
+ * for using the non-standard (and hard to package)
+ * {@code import com.sun.nio.file.SensitivityWatchEventModifier}
+ * type. The packaging problems relate to the module-info.java
+ * file.
  */
 public class DirectoryWatcher implements AutoCloseable {
   
@@ -82,8 +86,11 @@ public class DirectoryWatcher implements AutoCloseable {
     try {
       WatchKey watchKey = path.register(
           fs,
-          new WatchEvent.Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE },
-          SensitivityWatchEventModifier.HIGH );
+          new WatchEvent.Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE });
+//      WatchKey watchKey = path.register(
+//          fs,
+//          new WatchEvent.Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE },
+//          SensitivityWatchEventModifier.HIGH );
       watchKeys.put(path, watchKey);
       return true;
     } catch (IOException iox) {

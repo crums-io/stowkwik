@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import javax.xml.bind.JAXB;
 
 import io.crums.stowkwik.io.CorruptionException;
-import io.crums.xcept.NotFoundException;
 
 /**
  * Stores object state in XML format. Note the hashing scheme is independent of

@@ -1,7 +1,7 @@
 /*
  * Copyright 2017 Babak Farhang
  */
-package io.crums.xcept;
+package io.crums.stowkwik;
 
 
 /**
