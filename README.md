@@ -1,6 +1,12 @@
 # stowkwik
 
-Quick and dirty file per object store in Java. It's not terribly fast, but it does scale.
+Quick and dirty file-per-object store in Java. It's not terribly fast, but it does scale.
+
+## Maven Coordinates
+
+    <groupId>io.crums</groupId>
+    <artifactId>stowkwik</artifactId>
+    <version>1.0.0</version>
 
 ## Motivation
 
