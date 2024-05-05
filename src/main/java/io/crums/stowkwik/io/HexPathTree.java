@@ -51,11 +51,16 @@ public class HexPathTree extends HexPath {
   
   private final FilenameFilter entryFilter;
 
+  /**
+   * @see HexPath#HexPath(File, String)
+   */
   public HexPathTree(File dir, String ext) {
     this(dir, ext, 256);
   }
 
-  
+  /**
+   * @see HexPath#HexPath(File, String, int)
+   */
   public HexPathTree(File dir, String ext, int maxFilesPerDir) {
     super(dir, ext, maxFilesPerDir);
     this.entryFilter = convention.getFilenameFilter();
