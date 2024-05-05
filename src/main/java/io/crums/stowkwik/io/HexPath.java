@@ -269,7 +269,7 @@ public class HexPath {
     if (subdir.isDirectory())
       return subdir;
     
-    if (subdir.exists())
+    if (subdir.isFile())
       throw new IllegalStateException("not a subdir: " + subdir);
     
     return null;
