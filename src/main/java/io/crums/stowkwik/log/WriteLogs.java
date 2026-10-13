@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 import io.crums.stowkwik.BaseHashedObjectManager;
-import io.crums.io.FileUtils;
+import io.crums.util.io.FileUtils;
 import io.crums.stowkwik.io.HexPath;
 
 /**

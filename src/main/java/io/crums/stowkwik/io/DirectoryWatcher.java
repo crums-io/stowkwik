@@ -20,8 +20,8 @@ import java.util.Set;
 
 //import com.sun.nio.file.SensitivityWatchEventModifier;
 
-import io.crums.util.Isomorphism;
-import io.crums.util.Sets;
+import io.crums.util.collections.Isomorphism;
+import io.crums.util.collections.Sets;
 
 /**
  * This class has been stubbed out while a proper fix is found,

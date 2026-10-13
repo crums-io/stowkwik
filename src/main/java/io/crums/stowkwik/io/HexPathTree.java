@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,9 +21,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import io.crums.stowkwik.NotFoundException;
-import io.crums.util.EasyList;
 import io.crums.util.IntegralStrings;
-import io.crums.util.Lists;
+import io.crums.util.collections.Lists;
 
 /**
  * A more capable {@code HexPath}. This builds on the base class (which was factored out
@@ -176,20 +176,21 @@ public class HexPathTree extends HexPath {
 
 
     private final boolean distinct;
-    private final EasyList<HexDirectoryPosition> pathPositions;
-    
+    private final ArrayList<HexDirectoryPosition> pathPositions;
+
     private HexDirectoryPosition[] entryRankedPositions;
-    
+
     protected Cursor(boolean distinct) {
       this.distinct = distinct;
-      pathPositions = new EasyList<>(new HexDirectoryPosition(new HexDirectory()));
+      pathPositions = new ArrayList<>();
+      pathPositions.add(new HexDirectoryPosition(new HexDirectory()));
       init();
     }
-    
-    
-    
-    
-    private Cursor(boolean distinct, EasyList<HexDirectoryPosition> pathPositions) {
+
+
+
+
+    private Cursor(boolean distinct, ArrayList<HexDirectoryPosition> pathPositions) {
       this.distinct = distinct;
       this.pathPositions = pathPositions;
       init();
@@ -297,7 +298,7 @@ public class HexPathTree extends HexPath {
       // do a pushDown()
       // .. except here, we advance every subdir to the prefix
       
-      HexDirectoryPosition deepPosition = pathPositions.last();
+      HexDirectoryPosition deepPosition = pathPositions.getLast();
       
       while (deepPosition.hasSubdirs()) {
         // loop invariant: deepPosition.advanceToPrefix returned true
@@ -349,7 +350,7 @@ public class HexPathTree extends HexPath {
 
     @Override
     public Cursor trySplit() {
-      HexDirectoryPosition splitDirectory = pathPositions.first();
+      HexDirectoryPosition splitDirectory = pathPositions.getFirst();
       
       int splitDepth;
       {
@@ -365,7 +366,7 @@ public class HexPathTree extends HexPath {
       // Note: the splitDepth > 0 when we keep splitting a split instance
       //(typically 8 times to advance to the next depth)
       
-      EasyList<HexDirectoryPosition> pathPositionsCopy = new EasyList<>(pathPositions.size());
+      ArrayList<HexDirectoryPosition> pathPositionsCopy = new ArrayList<>(pathPositions.size());
       for (int depth = 0; depth < splitDepth; ++depth)
         pathPositionsCopy.add(new HexDirectoryPosition(pathPositions.get(depth)));
       
@@ -418,7 +419,7 @@ public class HexPathTree extends HexPath {
       switch (positions.length) {
       case 0: throw new AssertionError();
       case 1:
-        positions[0] = pathPositions.first();
+        positions[0] = pathPositions.getFirst();
         break;
       default:
         positions = pathPositions.toArray(positions);
@@ -428,20 +429,20 @@ public class HexPathTree extends HexPath {
     }
     
     private void pushDown() {
-      HexDirectoryPosition position = pathPositions.last();
+      HexDirectoryPosition position = pathPositions.getLast();
       while (position.hasSubdirs()) {
         position = new HexDirectoryPosition(position.firstSubdir());
         pathPositions.add(position);
       }
     }
-    
-    
+
+
     private void popConsumed() {
-      
-      while (pathPositions.size() > 1 && pathPositions.last().isConsumed()) {
+
+      while (pathPositions.size() > 1 && pathPositions.getLast().isConsumed()) {
         pathPositions.removeLast();
-        pathPositions.last().consumeNextSubdir();
-        if (pathPositions.last().hasSubdirs())
+        pathPositions.getLast().consumeNextSubdir();
+        if (pathPositions.getLast().hasSubdirs())
           pushDown();
       }
     }

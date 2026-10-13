@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.RandomAccess;
 
-import io.crums.io.channels.ChannelUtils;
+import io.crums.util.io.channels.ChannelUtils;
 import io.crums.stowkwik.io.CorruptionException;
 import io.crums.util.IntegralStrings;
 
